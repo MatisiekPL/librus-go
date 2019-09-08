@@ -19,7 +19,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Podsumowanie')),
+      appBar: AppBar(title: Text('Przegląd')),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -39,18 +39,35 @@ class _OverviewScreenState extends State<OverviewScreen> {
               ),
             ),
             ListTile(
-              title: Text('Item 1'),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-              },
+              leading: Icon(Icons.home),
+              title: Text('Przegląd'),
+              onTap: () {},
             ),
             ListTile(
-              title: Text('Item 2'),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-              },
+              leading: Icon(Icons.library_books),
+              title: Text('Oceny'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.access_time),
+              title: Text('Plan lekcji'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.calendar_today),
+              title: Text('Kalendarz'),
+              onTap: () {},
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Ustawienia'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.lightbulb_outline),
+              title: Text('O aplikacji'),
+              onTap: () {},
             ),
           ],
         ),
