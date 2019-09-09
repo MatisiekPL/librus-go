@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:librus_go/fragments/grades_fragment.dart';
 import 'package:librus_go/screens/login_screen.dart';
 
 class OverviewScreen extends StatefulWidget {
@@ -72,7 +73,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
           ],
         ),
       ),
-      body: SafeArea(child: Center(child: CircularProgressIndicator())),
+      body: GradesFragment(),
     );
   }
 }
