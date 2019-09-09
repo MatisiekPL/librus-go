@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:librus_go/misc/DrawCircle.dart';
 
 class GradesFragment extends StatefulWidget {
   @override
@@ -9,7 +10,7 @@ class _GradesFragmentState extends State<GradesFragment> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: 25,
+        itemCount: 5,
         itemBuilder: (context, int subjectIndex) => SubjectWidget());
   }
 }
@@ -22,7 +23,7 @@ class SubjectWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.only(left: 54.0, top: 20.0),
+          padding: const EdgeInsets.only(left: 56.0, top: 20.0),
           child: Container(
             child: Text(
               'Matematyka',
@@ -32,7 +33,7 @@ class SubjectWidget extends StatelessWidget {
         ),
         ListView.builder(
             shrinkWrap: true,
-            itemCount: 20,
+            itemCount: 5,
             physics: ClampingScrollPhysics(),
             itemBuilder: (context, int gradeIndex) => GradeWidget())
       ],
@@ -44,36 +45,73 @@ class SubjectWidget extends StatelessWidget {
 class GradeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          CircleAvatar(
-            backgroundColor: Colors.blue,
-            child: Text(
-              '6+',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Aktywność',
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        _showDetails(context);
+      },
+      child: Container(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  CircleAvatar(
+                    backgroundColor: Colors.blue,
+                    child: Text(
+                      '6+',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Aktywność',
+                          style: TextStyle(
+                              fontSize: 16.0, fontWeight: FontWeight.w500),
+                        ),
+                        Text(
+                          'Czwartek',
+                          style: TextStyle(
+                              fontSize: 16.0, fontStyle: FontStyle.italic),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  child: CustomPaint(painter: DrawCircle()),
                 ),
-                Text(
-                  'Czwartek',
-                  style: TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic),
-                )
-              ],
-            ),
-          )
-        ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  void _showDetails(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Szczegóły"),
+              content: Text('something...'),
+              actions: <Widget>[
+                new FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: new Text("OK"))
+              ],
+            ));
   }
 }

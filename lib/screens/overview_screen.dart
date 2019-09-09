@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:librus_go/fragments/grades_fragment.dart';
+import 'package:librus_go/misc/DrawCircle.dart';
 import 'package:librus_go/screens/login_screen.dart';
 
 class OverviewScreen extends StatefulWidget {
@@ -41,12 +43,34 @@ class _OverviewScreenState extends State<OverviewScreen> {
             ),
             ListTile(
               leading: Icon(Icons.home),
-              title: Text('Przegląd'),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text('Przegląd'),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+//                      child: CustomPaint(painter: DrawCircle()),
+                    ),
+                  ),
+                ],
+              ),
               onTap: () {},
             ),
             ListTile(
               leading: Icon(Icons.library_books),
-              title: Text('Oceny'),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text('Oceny'),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      child: CustomPaint(painter: DrawCircle()),
+                    ),
+                  ),
+                ],
+              ),
               onTap: () {},
             ),
             ListTile(
