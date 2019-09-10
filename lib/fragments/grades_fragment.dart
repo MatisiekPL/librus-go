@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:librus_go/misc/DrawCircle.dart';
 
 class GradesFragment extends StatefulWidget {
@@ -7,11 +8,31 @@ class GradesFragment extends StatefulWidget {
 }
 
 class _GradesFragmentState extends State<GradesFragment> {
+  Future<void> _refresh() async {
+    await Future.delayed(Duration(seconds: 3));
+    print("Refreshing!");
+    _showRefreshSnackbar();
+  }
+
+  void _showRefreshSnackbar() {
+    final scaffold = Scaffold.of(context);
+    var now = new DateTime.now();
+    scaffold.showSnackBar(
+      SnackBar(
+        content:
+            Text('Odświeżono o ' + DateFormat("HH:mm").format(now).toString()),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: 5,
-        itemBuilder: (context, int subjectIndex) => SubjectWidget());
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: ListView.builder(
+          itemCount: 5,
+          itemBuilder: (context, int subjectIndex) => SubjectWidget()),
+    );
   }
 }
 
@@ -35,7 +56,7 @@ class SubjectWidget extends StatelessWidget {
             shrinkWrap: true,
             itemCount: 5,
             physics: ClampingScrollPhysics(),
-            itemBuilder: (context, int gradeIndex) => GradeWidget())
+            itemBuilder: (context, int gradeIndex) => GradeWidget()),
       ],
     );
   }
