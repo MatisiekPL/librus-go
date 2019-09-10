@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:librus_go/misc/DrawCircle.dart';
+import 'package:librus_go/misc/draw_circle.dart';
 
 class GradesFragment extends StatefulWidget {
   @override

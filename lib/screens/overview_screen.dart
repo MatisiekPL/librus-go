@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:librus_go/fragments/grades_fragment.dart';
-import 'package:librus_go/misc/DrawCircle.dart';
+import 'package:librus_go/misc/draw_circle.dart';
 import 'package:librus_go/screens/login_screen.dart';
 
 class OverviewScreen extends StatefulWidget {

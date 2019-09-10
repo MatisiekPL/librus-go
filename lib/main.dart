@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:librus_go/screens/login_screen.dart';
 import 'package:librus_go/screens/overview_screen.dart';
 
 void main() => runApp(App());
@@ -9,7 +10,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: "Librus Go",
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: OverviewScreen(),
+      home: LoginScreen(),
     );
   }
 }
