@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-    Store.init();
+    Store.jar.deleteAll();
     setState(() {
       _loading = false;
     });

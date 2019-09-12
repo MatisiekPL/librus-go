@@ -11,10 +11,12 @@ class Store {
   static final String baseApiUrl = 'https://api.librus.pl/2.0';
   static final String clientId = 'wmSyUMo8llDAs4y9tJVYY92oyZ6h4lAt7KCuy0Gv';
   static Dio client;
+  static DefaultCookieJar jar;
 
   static init() {
+    jar = DefaultCookieJar();
     var _client = Dio(BaseOptions(headers: {'user-agent': 'LibrusMobileApp'}));
-    _client.interceptors.add(CookieManager(CookieJar()));
+    _client.interceptors.add(CookieManager(jar));
     client = _client;
   }
 
