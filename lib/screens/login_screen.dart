@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:librus_go/api/store.dart';
+import 'package:librus_go/screens/overview_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -85,10 +86,13 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _loading = true;
     });
+    bool success = false;
     try {
       await Store.login(
           _usernameFieldController.text, _passwordFieldController.text);
+      success = true;
     } catch (err) {
+      print(err);
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(
           content: Text('Coś poszło nie tak...'),
@@ -99,6 +103,10 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _loading = false;
     });
+    if (success) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => OverviewScreen()));
+    }
   }
 }
 

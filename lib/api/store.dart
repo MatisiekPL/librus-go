@@ -57,6 +57,35 @@ class Store {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("librus_token", librusToken);
     await prefs.setString("librus_refresh_token", librusRefreshToken);
+    librusToken = await _refreshLibrusToken(librusRefreshToken);
+    await prefs.setString("librus_token", librusToken);
+    await _loadSynergiaAccounts(librusToken);
     return librusToken;
+  }
+
+  static Future<String> _refreshLibrusToken(String librusRefreshToken) async {
+    var response = await client.post(
+      '$baseUrl/oauth2/access_token',
+      data: {
+        "grant_type": "refresh_token ",
+        "refresh_token": librusRefreshToken,
+        "client_id": clientId
+      },
+      options: Options(headers: {"Content-Type": "application/json"}),
+    );
+    var librusToken = response.data["access_token"];
+    print("Got refreshed librus token: $librusToken");
+    return librusToken;
+  }
+
+  static Future<String> _loadSynergiaAccounts(String librusToken) async {
+    var response = await client.get(
+        'https://portal.librus.pl/api/v2/SynergiaAccounts',
+        options: Options(headers: {'Authorization': 'Bearer $librusToken'}));
+    var synergiaToken = response.data["accounts"][0]["accessToken"];
+    print("Got Synergia token: $synergiaToken");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("synergia_token", synergiaToken);
+    return synergiaToken;
   }
 }
