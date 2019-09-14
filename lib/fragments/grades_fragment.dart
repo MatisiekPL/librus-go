@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:librus_go/api/grades_api.dart';
+import 'package:librus_go/api/store.dart';
 import 'package:librus_go/misc/draw_circle.dart';
 
 class GradesFragment extends StatefulWidget {
@@ -9,7 +10,8 @@ class GradesFragment extends StatefulWidget {
 }
 
 class _GradesFragmentState extends State<GradesFragment> {
-  dynamic _semesters = [];
+  dynamic _semesters = {};
+  dynamic _selectedSemester = 1;
 
   @override
   void initState() {
@@ -38,41 +40,57 @@ class _GradesFragmentState extends State<GradesFragment> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: _refresh,
-      child: ListView.builder(
-          itemCount: 5,
-          itemBuilder: (context, int subjectIndex) => SubjectWidget()),
+      child: _semesters.keys.length == 0
+          ? CircularProgressIndicator()
+          : ListView.builder(
+              itemCount: _semesters[_selectedSemester].length,
+              itemBuilder: (context, int subjectIndex) =>
+                  SubjectWidget(_semesters[_selectedSemester][subjectIndex])),
     );
   }
 }
 
 // Specific subject widget
+// ignore: must_be_immutable
 class SubjectWidget extends StatelessWidget {
+  dynamic _subject;
+
+  SubjectWidget(this._subject);
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 56.0, top: 20.0),
-          child: Container(
-            child: Text(
-              'Matematyka',
-              style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-        ListView.builder(
-            shrinkWrap: true,
-            itemCount: 5,
-            physics: ClampingScrollPhysics(),
-            itemBuilder: (context, int gradeIndex) => GradeWidget()),
-      ],
-    );
+    return _subject["grades"].length == 0
+        ? Container()
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 56.0, top: 20.0),
+                child: Container(
+                  child: Text(
+                    capitalize(_subject["Name"]),
+                    style:
+                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _subject["grades"].length,
+                  physics: ClampingScrollPhysics(),
+                  itemBuilder: (context, int gradeIndex) =>
+                      GradeWidget(_subject["grades"][gradeIndex])),
+            ],
+          );
   }
 }
 
 // specific grade widget
 class GradeWidget extends StatelessWidget {
+  dynamic _grade;
+
+  GradeWidget(this._grade);
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -92,7 +110,7 @@ class GradeWidget extends StatelessWidget {
                   CircleAvatar(
                     backgroundColor: Colors.blue,
                     child: Text(
-                      '6+',
+                      _grade["Grade"],
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -102,12 +120,12 @@ class GradeWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          'Aktywność',
+                          capitalize(_grade["category"]["Name"]),
                           style: TextStyle(
                               fontSize: 16.0, fontWeight: FontWeight.w500),
                         ),
                         Text(
-                          'Czwartek',
+                          _grade["AddDate"],
                           style: TextStyle(
                               fontSize: 16.0, fontStyle: FontStyle.italic),
                         )
