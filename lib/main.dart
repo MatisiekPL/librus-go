@@ -10,12 +10,25 @@ void main() {
 }
 
 class App extends StatelessWidget {
+  Future<Widget> getScreen() async {
+    if (await Store.attempt()) return OverviewScreen();
+    return LoginScreen();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Librus Go",
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: LoginScreen(),
+      home: FutureBuilder(
+        future: getScreen(),
+        builder: (BuildContext context, AsyncSnapshot<Widget> snap) =>
+            snap.data != null
+                ? snap.data
+                : Scaffold(
+                    body: Center(child: new CircularProgressIndicator()),
+                  ),
+      ),
     );
   }
 }

@@ -21,6 +21,20 @@ class Store {
     client = _client;
   }
 
+  static Future<bool> attempt() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey("librus_token")) {
+      var librusToken = prefs.getString('librus_token');
+      var librusRefreshToken = prefs.getString('librus_refresh_token');
+      print('Got cached Librus token: $librusToken');
+      print('Got cached Librus refresh token: $librusRefreshToken');
+      librusToken = await _refreshLibrusToken(librusRefreshToken);
+      await _loadSynergiaAccounts(librusToken);
+      return true;
+    }
+    return false;
+  }
+
   static Future<String> login(String username, String password) async {
     var response = await client.get(
         '$baseUrl/oauth2/authorize?client_id=$clientId&redirect_uri=http://localhost/bar&response_type=code');
@@ -57,24 +71,29 @@ class Store {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("librus_token", librusToken);
     await prefs.setString("librus_refresh_token", librusRefreshToken);
-    librusToken = await _refreshLibrusToken(librusRefreshToken);
-    await prefs.setString("librus_token", librusToken);
+    await _refreshLibrusToken(librusRefreshToken);
     await _loadSynergiaAccounts(librusToken);
     return librusToken;
   }
 
-  static Future<String> _refreshLibrusToken(String librusRefreshToken) async {
+  static Future<String> _refreshLibrusToken(
+      String oldLibrusRefreshToken) async {
     var response = await client.post(
       '$baseUrl/oauth2/access_token',
       data: {
-        "grant_type": "refresh_token ",
-        "refresh_token": librusRefreshToken,
+        "grant_type": "refresh_token",
+        "refresh_token": oldLibrusRefreshToken,
         "client_id": clientId
       },
       options: Options(headers: {"Content-Type": "application/json"}),
     );
     var librusToken = response.data["access_token"];
-    print("Got refreshed librus token: $librusToken");
+    var librusRefreshToken = response.data["refresh_token"];
+    print('Got refreshed Librus token: ' + librusToken);
+    print('Got refreshed Librus refresh token: ' + librusRefreshToken);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("librus_token", librusToken);
+    await prefs.setString("librus_refresh_token", librusRefreshToken);
     return librusToken;
   }
 

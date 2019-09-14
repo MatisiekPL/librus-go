@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
           new ListView(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   children: <Widget>[
                     Logo(),
