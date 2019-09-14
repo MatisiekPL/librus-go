@@ -9,7 +9,7 @@ class GradesFragment extends StatefulWidget {
 }
 
 class _GradesFragmentState extends State<GradesFragment> {
-  dynamic _subjects = [];
+  dynamic _semesters = [];
 
   @override
   void initState() {
@@ -19,7 +19,7 @@ class _GradesFragmentState extends State<GradesFragment> {
 
   Future<void> _refresh() async {
     print("Refreshing!");
-    _subjects = await GradesApi.fetch();
+    _semesters = await GradesApi.fetch();
     _showRefreshSnackbar();
   }
 

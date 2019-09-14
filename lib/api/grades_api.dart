@@ -13,12 +13,18 @@ class GradesApi {
       options.headers["Authorization"] = 'Bearer $synergiaToken';
       return options;
     }));
-    var grades = (await dio.get('$apiUrl/Grades')).data['Grades'];
-    var subjects = (await dio.get('$apiUrl/Subjects')).data['Subjects'];
+    var grades = (await dio.get('$apiUrl/Grades')).data['Grades'] as List;
+    var subjects = (await dio.get('$apiUrl/Subjects')).data['Subjects'] as List;
     var categories =
-        (await dio.get('$apiUrl/Grades/Categories')).data['Categories'];
-    var users = (await dio.get('$apiUrl/Users')).data['Users'];
+        (await dio.get('$apiUrl/Grades/Categories')).data['Categories'] as List;
+    var users = (await dio.get('$apiUrl/Users')).data['Users'] as List;
     print('Fetched data of grades. Merging...');
+    grades.forEach((dynamic grade) => grade["category"] =
+        (categories.firstWhere(
+                (dynamic category) => category["Id"] == grade["Category"]["Id"])
+            as dynamic));
+    grades.forEach((dynamic grade) => grade["addedBy"] = (users.firstWhere(
+        (dynamic user) => user["Id"] == grade["AddedBy"]["Id"]) as dynamic));
     var semesters = [];
     var out = {};
     grades.forEach((dynamic grade) => !semesters.contains(grade["Semester"])
@@ -35,5 +41,6 @@ class GradesApi {
       out[semester] = semesterData;
     });
     print('Merging completed');
+    return out;
   }
 }
