@@ -2,17 +2,24 @@ import 'dart:convert';
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Store {
   static BehaviorSubject fragmentSubject = new BehaviorSubject();
+  static BehaviorSubject titleSubject = new BehaviorSubject();
+  static BehaviorSubject actionsSubject = new BehaviorSubject();
   static final String baseUrl = 'https://portal.librus.pl';
   static final String baseApiUrl = 'https://api.librus.pl/2.0';
   static final String clientId = 'wmSyUMo8llDAs4y9tJVYY92oyZ6h4lAt7KCuy0Gv';
   static Dio client;
   static DefaultCookieJar jar;
+  static dynamic synergiaAccount;
+  static Map<String, bool> indicators = Map();
+  static int gradeReadTime = 0;
+  static dynamic overviewScreenSetState;
 
   static init() {
     jar = DefaultCookieJar();
@@ -102,6 +109,7 @@ class Store {
         'https://portal.librus.pl/api/v2/SynergiaAccounts',
         options: Options(headers: {'Authorization': 'Bearer $librusToken'}));
     var synergiaToken = response.data["accounts"][0]["accessToken"];
+    synergiaAccount = response.data["accounts"][0];
     print("Got Synergia token: $synergiaToken");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("synergia_token", synergiaToken);

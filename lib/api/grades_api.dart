@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
+import 'package:librus_go/api/store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GradesApi {
@@ -41,6 +43,13 @@ class GradesApi {
       out[semester] = semesterData;
     });
     print('Merging completed');
+    Store.gradeReadTime = prefs.getInt("grade_read_time") ?? 0;
+    if (grades.any((dynamic grade) =>
+        Store.gradeReadTime <
+        DateFormat("yyyy-MM-dd HH:mm:ss")
+            .parse(grade['AddDate'])
+            .millisecondsSinceEpoch)) Store.indicators['grades'] = true;
+    Store.overviewScreenSetState();
     return out;
   }
 }

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:librus_go/api/grades_api.dart';
 import 'package:librus_go/api/store.dart';
 import 'package:librus_go/misc/draw_circle.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GradesFragment extends StatefulWidget {
   @override
@@ -16,15 +17,50 @@ class _GradesFragmentState extends State<GradesFragment> {
   @override
   void initState() {
     super.initState();
+    _refreshReadTime();
+    Store.actionsSubject.add(<Widget>[
+      PopupMenuButton<String>(
+        onSelected: (String action) {
+          switch (action) {
+            case "mark_as_read":
+              _markAsRead();
+              break;
+          }
+        },
+        itemBuilder: (context) {
+          return [
+            PopupMenuItem<String>(
+              value: 'mark_as_read',
+              child: Text('Oznacz jako przeczytane'),
+            )
+          ];
+        },
+      )
+    ]);
     _refresh();
+  }
+
+  Future<void> _markAsRead() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(
+        "grade_read_time", new DateTime.now().millisecondsSinceEpoch);
+    await _refreshReadTime();
+    Store.indicators['grades'] = false;
+    Store.overviewScreenSetState();
+  }
+
+  Future<void> _refreshReadTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      Store.gradeReadTime = prefs.getInt("grade_read_time") ?? 0;
+    });
+    print('Recently grades was displayed on: ${Store.gradeReadTime}');
   }
 
   Future<void> _refresh() async {
     print("Refreshing!");
     _semesters = await GradesApi.fetch();
-    setState(() {
-
-    });
+    setState(() {});
     _showRefreshSnackbar();
   }
 
@@ -33,6 +69,7 @@ class _GradesFragmentState extends State<GradesFragment> {
     var now = new DateTime.now();
     scaffold.showSnackBar(
       SnackBar(
+        duration: Duration(seconds: 2),
         content:
             Text('Odświeżono o ' + DateFormat("HH:mm").format(now).toString()),
       ),
@@ -137,12 +174,17 @@ class GradeWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  child: CustomPaint(painter: DrawCircle()),
-                ),
-              ),
+              Store.gradeReadTime <
+                      DateFormat("yyyy-MM-dd HH:mm:ss")
+                          .parse(_grade['AddDate'])
+                          .millisecondsSinceEpoch
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        child: CustomPaint(painter: DrawCircle()),
+                      ),
+                    )
+                  : Container(),
             ],
           ),
         ),
