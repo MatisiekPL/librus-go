@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:librus_go/api/timetable_api.dart';
 import 'package:librus_go/misc/draw_circle.dart';
-import 'package:intl/intl.dart';
 
 class TimetableFragment extends StatefulWidget {
   @override
@@ -16,7 +14,6 @@ class _TimetableFragmentState extends State<TimetableFragment> {
   @override
   void initState() {
     super.initState();
-    initializeDateFormatting();
     _refresh();
   }
 
@@ -64,8 +61,8 @@ class DayWidget extends StatelessWidget {
           padding: const EdgeInsets.only(left: 56.0, top: 20.0),
           child: Container(
             child: Text(
-              new DateFormat('EEEE')
-                  .format(DateFormat("yyyy-MM-dd").parse(_key)),
+              _processWeekday(new DateFormat('EEEE')
+                  .format(DateFormat("yyyy-MM-dd").parse(_key))),
               style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
             ),
           ),
@@ -77,6 +74,39 @@ class DayWidget extends StatelessWidget {
             itemBuilder: (context, int lessonIndex) => LessonWidget()),
       ],
     );
+  }
+
+  String _translateWeekday(String weekday) {
+    switch (weekday) {
+      case "Monday":
+        return "Poniedziałek";
+      case "Tuesday":
+        return "Wtorek";
+      case "Wednesday":
+        return "Środa";
+      case "Thursday":
+        return "Czwartek";
+      case "Friday":
+        return "Piątek";
+      case "Saturday":
+        return "Sobota";
+      case "Sunday":
+        return "Niedziela";
+    }
+    return "Nie rozumiem";
+  }
+
+  String _processWeekday(String weekday) {
+    print(DateFormat("yyyy-MM-dd").parse(_key).day.toString() +
+        " -- " +
+        DateTime.now().day.toString());
+    if (DateFormat("yyyy-MM-dd").parse(_key).day == DateTime.now().day)
+      return "Dziś";
+    if (DateFormat("yyyy-MM-dd").parse(_key).day == DateTime.now().day - 1)
+      return "Wczoraj";
+    if (DateFormat("yyyy-MM-dd").parse(_key).day == DateTime.now().day + 1)
+      return "Jutro";
+    return _translateWeekday(weekday);
   }
 }
 
