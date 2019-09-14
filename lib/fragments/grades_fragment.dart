@@ -41,7 +41,7 @@ class _GradesFragmentState extends State<GradesFragment> {
     return RefreshIndicator(
       onRefresh: _refresh,
       child: _semesters.keys.length == 0
-          ? CircularProgressIndicator()
+          ? Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: _semesters[_selectedSemester].length,
               itemBuilder: (context, int subjectIndex) =>
@@ -152,7 +152,71 @@ class GradeWidget extends StatelessWidget {
         context: context,
         builder: (BuildContext context) => AlertDialog(
               title: Text("Szczegóły"),
-              content: Text('something...'),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    'Ocena:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    _grade['Grade'],
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Data:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    _grade['Date'],
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Data dodania:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    _grade['AddDate'],
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Kategoria:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    _grade['category']['Name'],
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Liczone do średniej:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    _grade['category']['CountToTheAverage'] ? 'Tak' : 'Nie',
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Waga:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    _grade['category']['CountToTheAverage']
+                        ? _grade['category']['Weight'].toString()
+                        : 'Brak',
+                  ),
+                ],
+              ),
               actions: <Widget>[
                 new FlatButton(
                     onPressed: () {
