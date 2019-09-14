@@ -14,15 +14,22 @@ class TimetableApi {
       return options;
     }));
     var timetable = (await dio.get('$apiUrl/Timetables')).data['Timetable'];
+    var classrooms = (await dio.get('$apiUrl/Classrooms')).data['Classrooms'];
     var days = timetable.keys;
     days.forEach((day) {
       timetable[day].forEach((hour) {
         if (hour.length < 1) {
           hour.add({
             'Subject': {'Name': 'Okienko'},
-            'Teacher': {'FirstName': '', 'LastName': ''}
+            'Teacher': {'FirstName': '', 'LastName': ''},
+            'HourFrom': '',
+            'HourTo': ''
           });
         }
+        if (hour[0]["Classroom"] != null)
+          hour[0]["classroom"] = classrooms.firstWhere((dynamic classroom) =>
+              classroom["Id"].toString() ==
+              hour[0]["Classroom"]["Id"].toString());
       });
     });
     return timetable;

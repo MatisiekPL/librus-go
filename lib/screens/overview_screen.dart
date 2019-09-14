@@ -23,7 +23,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
   }
 
   _initAsync() async {
-    await initializeDateFormatting('pl_PL', null);
     Store.fragmentSubject.add(GradesFragment());
     Store.titleSubject.add('Oceny');
     Store.overviewScreenSetState = () {
