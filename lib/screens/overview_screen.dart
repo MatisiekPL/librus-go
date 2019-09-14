@@ -21,9 +21,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
     Store.fragmentSubject.add(GradesFragment());
     Store.titleSubject.add('Oceny');
     Store.overviewScreenSetState = () {
-      setState(() {
-
-      });
+      setState(() {});
     };
   }
 
