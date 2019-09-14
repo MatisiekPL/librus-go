@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:librus_go/api/grades_api.dart';
 import 'package:librus_go/misc/draw_circle.dart';
 
 class GradesFragment extends StatefulWidget {
@@ -8,9 +9,17 @@ class GradesFragment extends StatefulWidget {
 }
 
 class _GradesFragmentState extends State<GradesFragment> {
+  dynamic _subjects = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _refresh();
+  }
+
   Future<void> _refresh() async {
-    await Future.delayed(Duration(seconds: 3));
     print("Refreshing!");
+    _subjects = await GradesApi.fetch();
     _showRefreshSnackbar();
   }
 

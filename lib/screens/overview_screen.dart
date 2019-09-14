@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:librus_go/fragments/grades_fragment.dart';
 import 'package:librus_go/misc/draw_circle.dart';
 import 'package:librus_go/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OverviewScreen extends StatefulWidget {
   @override
@@ -13,10 +16,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-//      Navigator.push(
-//          context, MaterialPageRoute(builder: (context) => LoginScreen()));
-    });
   }
 
   @override
@@ -51,7 +50,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
 //                      child: CustomPaint(painter: DrawCircle()),
-                    ),
+                        ),
                   ),
                 ],
               ),
@@ -93,6 +92,16 @@ class _OverviewScreenState extends State<OverviewScreen> {
               leading: Icon(Icons.lightbulb_outline),
               title: Text('O aplikacji'),
               onTap: () {},
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.exit_to_app),
+              title: Text('Wyloguj'),
+              onTap: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
+                exit(0);
+              },
             ),
           ],
         ),
