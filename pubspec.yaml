@@ -16,6 +16,7 @@ dependencies:
   cookie_jar: ^1.0.1
   html: ^0.14.0+2
   dio: ^2.1.16
+  connectivity: ^0.4.4
 
 dev_dependencies:
   flutter_test:

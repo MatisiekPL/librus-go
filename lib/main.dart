@@ -1,5 +1,7 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:librus_go/screens/login_screen.dart';
+import 'package:librus_go/screens/offline_screen.dart';
 import 'package:librus_go/screens/overview_screen.dart';
 
 import 'api/store.dart';
@@ -11,8 +13,13 @@ void main() {
 
 class App extends StatelessWidget {
   Future<Widget> getScreen() async {
-    if (await Store.attempt()) return OverviewScreen();
-    return LoginScreen();
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      if (await Store.attempt()) return OverviewScreen();
+      return LoginScreen();
+    }
+    return OfflineScreen();
   }
 
   @override
