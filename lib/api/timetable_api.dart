@@ -26,10 +26,12 @@ class TimetableApi {
             'HourTo': ''
           });
         }
-        if (hour[0]["Classroom"] != null)
-          hour[0]["classroom"] = classrooms.firstWhere((dynamic classroom) =>
-              classroom["Id"].toString() ==
-              hour[0]["Classroom"]["Id"].toString());
+        hour.forEach((item) {
+          if (item["Classroom"] != null)
+            item["classroom"] = classrooms.firstWhere((dynamic classroom) =>
+                classroom["Id"].toString() ==
+                item["Classroom"]["Id"].toString());
+        });
       });
     });
     return timetable;

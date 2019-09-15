@@ -40,11 +40,14 @@ class _TimetableFragmentState extends State<TimetableFragment> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: _timetable.keys.length,
-        itemBuilder: (context, int dayIndex) => DayWidget(
-            _timetable[_timetable.keys.toList()[dayIndex]],
-            _timetable.keys.toList()[dayIndex]));
+    return RefreshIndicator(
+      child: ListView.builder(
+          itemCount: _timetable.keys.length,
+          itemBuilder: (context, int dayIndex) => DayWidget(
+              _timetable[_timetable.keys.toList()[dayIndex]],
+              _timetable.keys.toList()[dayIndex])),
+      onRefresh: _refresh,
+    );
   }
 }
 
@@ -76,8 +79,14 @@ class DayWidget extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: _day.length,
                   physics: ClampingScrollPhysics(),
-                  itemBuilder: (context, int lessonIndex) =>
-                      LessonWidget(_day[lessonIndex][0])),
+                  itemBuilder: (context, int lessonIndex) => ListView.builder(
+                      shrinkWrap: true,
+                      physics: ClampingScrollPhysics(),
+                      itemCount: _day[lessonIndex] != null
+                          ? _day[lessonIndex].length
+                          : 0,
+                      itemBuilder: (context, ind) =>
+                          LessonWidget(_day[lessonIndex][ind]))),
             ],
           );
   }
@@ -139,8 +148,14 @@ class LessonWidget extends StatelessWidget {
                         CircleAvatar(
                           backgroundColor: Colors.blue,
                           child: Text(
-                            _lesson['LessonNo'],
-                            style: TextStyle(color: Colors.white),
+                            _lesson['LessonNo'] ?? '',
+                            style: TextStyle(
+                              color: Colors.white,
+                              decoration: _lesson['IsCanceled'] != null &&
+                                      _lesson['IsCanceled']
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                            ),
                           ),
                         ),
                         Padding(
@@ -148,15 +163,35 @@ class LessonWidget extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(
-                                capitalize(_lesson['Subject']['Name']),
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.w500),
+                              Row(
+                                children: <Widget>[
+                                  Text(
+                                    capitalize(_lesson['Subject']['Name']),
+                                    style: TextStyle(
+                                        decoration:
+                                            _lesson['IsCanceled'] != null &&
+                                                    _lesson['IsCanceled']
+                                                ? TextDecoration.lineThrough
+                                                : TextDecoration.none,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  _lesson['IsCanceled'] != null &&
+                                          _lesson['IsCanceled']
+                                      ? Text(' - (Odwołane)',
+                                          style: TextStyle(
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.w500))
+                                      : Container()
+                                ],
                               ),
                               Text(
                                 '${_lesson['HourFrom'].toString()} - ${_lesson['HourTo'].toString()}',
                                 style: TextStyle(
+                                    decoration: _lesson['IsCanceled'] != null &&
+                                            _lesson['IsCanceled']
+                                        ? TextDecoration.lineThrough
+                                        : TextDecoration.none,
                                     fontSize: 16.0,
                                     fontStyle: FontStyle.italic),
                               )
@@ -168,9 +203,17 @@ class LessonWidget extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
-                          child: Text(_lesson['classroom'] != null
-                              ? _lesson['classroom']['Symbol']
-                              : '')),
+                          child: Text(
+                        _lesson['classroom'] != null
+                            ? _lesson['classroom']['Symbol']
+                            : '',
+                        style: TextStyle(
+                          decoration: _lesson['IsCanceled'] != null &&
+                                  _lesson['IsCanceled']
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                        ),
+                      )),
                     )
                   ],
                 ),
