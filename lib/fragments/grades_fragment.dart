@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:librus_go/api/grades_api.dart';
@@ -25,6 +27,9 @@ class _GradesFragmentState extends State<GradesFragment> {
             case "mark_as_read":
               _markAsRead();
               break;
+            case "switch_semester":
+              _switchSemester();
+              break;
           }
         },
         itemBuilder: (context) {
@@ -32,12 +37,59 @@ class _GradesFragmentState extends State<GradesFragment> {
             PopupMenuItem<String>(
               value: 'mark_as_read',
               child: Text('Oznacz jako przeczytane'),
+            ),
+            PopupMenuItem<String>(
+              value: 'switch_semester',
+              child: Text('Zmień semestr'),
             )
           ];
         },
       )
     ]);
     _refresh();
+  }
+
+  Future<void> _switchSemester() async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Zmień semestr"),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(
+                    _semesters.keys.length,
+                    (index) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            _semesters.keys.length > 1 && index != 0
+                                ? SizedBox(
+                                    height: 16.0,
+                                  )
+                                : Container(),
+                            GestureDetector(
+                              child: Text(
+                                'Semestr ${_semesters.keys.toList()[index]}',
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  _selectedSemester =
+                                      _semesters.keys.toList()[index];
+                                });
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        )).toList(),
+              ),
+              actions: <Widget>[
+                new FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: new Text("Anuluj"))
+              ],
+            ));
   }
 
   Future<void> _markAsRead() async {
