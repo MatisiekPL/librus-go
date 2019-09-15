@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:librus_go/api/store.dart';
 import 'package:librus_go/fragments/grades_fragment.dart';
 import 'package:librus_go/fragments/timetable_fragment.dart';
@@ -18,12 +19,14 @@ class _OverviewScreenState extends State<OverviewScreen> {
   @override
   void initState() {
     super.initState();
+    _initAsync();
+  }
+
+  _initAsync() async {
     Store.fragmentSubject.add(GradesFragment());
     Store.titleSubject.add('Oceny');
     Store.overviewScreenSetState = () {
-      setState(() {
-
-      });
+      setState(() {});
     };
   }
 

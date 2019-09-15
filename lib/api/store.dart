@@ -105,14 +105,18 @@ class Store {
   }
 
   static Future<String> _loadSynergiaAccounts(String librusToken) async {
-    var response = await client.get(
-        'https://portal.librus.pl/api/v2/SynergiaAccounts',
-        options: Options(headers: {'Authorization': 'Bearer $librusToken'}));
-    var synergiaToken = response.data["accounts"][0]["accessToken"];
-    synergiaAccount = response.data["accounts"][0];
-    print("Got Synergia token: $synergiaToken");
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    var synergiaLogin = prefs.getString("synergia_login");
+    var url = 'https://portal.librus.pl/api/v2/SynergiaAccounts' +
+        (synergiaLogin != null ? '/fresh/$synergiaLogin' : '');
+    var response = await client.get(url,
+        options: Options(headers: {'Authorization': 'Bearer $librusToken'}));
+    synergiaAccount = response.data;
+    if (synergiaLogin == null) synergiaAccount = synergiaAccount["accounts"][0];
+    var synergiaToken = synergiaAccount["accessToken"];
+    print("Got Synergia token: $synergiaToken");
     await prefs.setString("synergia_token", synergiaToken);
+    await prefs.setString("synergia_login", synergiaAccount['login']);
     return synergiaToken;
   }
 }

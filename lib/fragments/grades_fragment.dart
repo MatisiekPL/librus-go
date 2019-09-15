@@ -60,7 +60,9 @@ class _GradesFragmentState extends State<GradesFragment> {
   Future<void> _refresh() async {
     print("Refreshing!");
     _semesters = await GradesApi.fetch();
-    setState(() {});
+    try {
+      setState(() {});
+    } catch (err) {}
     _showRefreshSnackbar();
   }
 
