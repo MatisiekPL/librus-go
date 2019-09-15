@@ -1,5 +1,6 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:librus_go/screens/login_screen.dart';
 import 'package:librus_go/screens/offline_screen.dart';
 import 'package:librus_go/screens/overview_screen.dart';
@@ -7,8 +8,10 @@ import 'package:librus_go/screens/overview_screen.dart';
 import 'api/store.dart';
 
 void main() {
-  Store.init();
-  runApp(App());
+  initializeDateFormatting().then((_) {
+    Store.init();
+    runApp(App());
+  });
 }
 
 class App extends StatelessWidget {
