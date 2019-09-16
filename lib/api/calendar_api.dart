@@ -90,20 +90,33 @@ class CalendarApi {
         'parentTeacherConference': parentTeacherConference
       });
     });
-//    classFreeDays.forEach((classFreeDay) {
-//      if (!out.containsKey(
-//          new DateFormat('yyyy-MM-dd').parse(parentTeacherConference['Date'])))
-//        out[new DateFormat('yyyy-MM-dd')
-//            .parse(parentTeacherConference['Date'])] = [];
-//      out[new DateFormat('yyyy-MM-dd').parse(parentTeacherConference['Date'])]
-//          .add({
-//        'name': parentTeacherConference['Name'],
-//        'type': 'normal',
-//        'subject': 'brak',
-//        'kind': 'parentTeacherConference',
-//        'parentTeacherConference': parentTeacherConference
-//      });
-//    });
+    classFreeDays.forEach((classFreeDay) {
+      var date = new DateFormat('yyyy-MM-dd').parse(classFreeDay['DateFrom']);
+      var submit = (target) {
+        if (!out.containsKey(target)) out[target] = [];
+        if (!out[target]
+            .where((dynamic item) => item['kind'] == 'classFreeDay')
+            .any((dynamic item) => out[target]
+                .where((dynamic item2) => item2['kind'] == 'classFreeDay')
+                .any((dynamic item2) =>
+                    item2['classFreeDay']['Type']['Id'] ==
+                    item['classFreeDay']['Type']['Id'])))
+          out[target].add({
+            'name': 'Brak zajęć',
+            'type': 'normal',
+            'subject': 'brak',
+            'kind': 'classFreeDay',
+            'classFreeDay': classFreeDay
+          });
+      };
+      if (date == new DateFormat('yyyy-MM-dd').parse(classFreeDay['DateTo']))
+        submit(date);
+      var diff = date.difference(
+          new DateFormat('yyyy-MM-dd').parse(classFreeDay['DateTo']));
+      for (var i = 0; i < diff.inDays; i++) {
+        submit(date.add(Duration(days: i)));
+      }
+    });
     return out;
   }
 }
