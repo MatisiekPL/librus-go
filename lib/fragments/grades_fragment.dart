@@ -163,6 +163,7 @@ class SubjectWidget extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 56.0, top: 20.0),
                   child: Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
                     child: Text(
                       capitalize(_subject["Name"]),
                       style: TextStyle(
@@ -380,6 +381,7 @@ class GradeWidget extends StatelessWidget {
         _showDetails(context);
       },
       child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(

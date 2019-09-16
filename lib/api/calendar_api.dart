@@ -58,6 +58,7 @@ class CalendarApi {
         'from': homework['TimeFrom'],
         'to': homework['TimeTo'],
         'subject': homework['subject'],
+        'desc': homework['category']['Name'],
         'kind': 'homework',
         'homework': homework
       });
@@ -73,6 +74,7 @@ class CalendarApi {
         'type': substitution['IsShifted'] ? 'shifting' : 'cancelation',
         'subject': substitution['orgSubject']['Name'],
         'kind': 'substitution',
+        'desc': substitution['IsShifted'] ? 'Przesunięcie' : 'Odwołanie',
         'substitution': substitution
       });
     });
@@ -87,7 +89,8 @@ class CalendarApi {
         'type': 'normal',
         'subject': 'brak',
         'kind': 'parentTeacherConference',
-        'parentTeacherConference': parentTeacherConference
+        'parentTeacherConference': parentTeacherConference,
+        'desc': 'Wywiadówka'
       });
     });
     classFreeDays.forEach((classFreeDay) {
@@ -106,7 +109,8 @@ class CalendarApi {
             'type': 'normal',
             'subject': 'brak',
             'kind': 'classFreeDay',
-            'classFreeDay': classFreeDay
+            'classFreeDay': classFreeDay,
+            'desc': ''
           });
       };
       if (date == new DateFormat('yyyy-MM-dd').parse(classFreeDay['DateTo']))
