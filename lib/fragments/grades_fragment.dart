@@ -343,11 +343,11 @@ class SubjectWidget extends StatelessWidget {
                                                 Navigator.of(context).pop();
                                               },
                                               items: List.generate(
-                                                  10,
+                                                  9,
                                                   (weight) => DropdownMenuItem(
-                                                        value: weight,
-                                                        child: Text(
-                                                            weight.toString()),
+                                                        value: (weight + 1),
+                                                        child: Text((weight + 1)
+                                                            .toString()),
                                                       )).toList())
                                         ],
                                       ),

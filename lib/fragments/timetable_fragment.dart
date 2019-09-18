@@ -13,23 +13,72 @@ class TimetableFragment extends StatefulWidget {
 
 class _TimetableFragmentState extends State<TimetableFragment> {
   dynamic _timetable = Map<String, List<dynamic>>();
+  static DateTime _selectedWeek;
+  static bool _notCurrentWeek = false;
+  dynamic _setState;
+  dynamic _ctx;
+
+  DateTime _selectWeek(time) {
+    var monday = 1;
+    while (time.weekday != monday) time = time.subtract(new Duration(days: 1));
+    return time;
+  }
 
   @override
   void initState() {
     super.initState();
-    Store.actionsSubject.add(<Widget>[]);
-    _refresh();
+    _selectedWeek = _selectWeek(DateTime.now());
+    Store.actionsSubject.add(<Widget>[
+      PopupMenuButton<int>(
+        onSelected: (int action) async {
+          switch (action) {
+            case 1:
+              _selectedWeek = _selectedWeek.add(Duration(days: 7));
+              _setState(() {
+                _timetable = new Map();
+              });
+              await _refresh(false);
+              break;
+            case 2:
+              _selectedWeek = _selectedWeek.subtract(Duration(days: 7));
+              _setState(() {
+                _timetable = new Map();
+              });
+              await _refresh(false);
+              break;
+          }
+        },
+        itemBuilder: (context) {
+          return [
+            PopupMenuItem<int>(
+              value: 1,
+              child: Text('Następny tydzień'),
+            ),
+            PopupMenuItem<int>(
+              value: 2,
+              child: Text('Poprzedni tydzień'),
+            )
+          ];
+        },
+      )
+    ]);
+    _refresh(true);
   }
 
-  Future<void> _refresh() async {
+  Future<void> _refresh(bool showSnackbar) async {
+    _notCurrentWeek =
+        _selectWeek(DateTime.now()).difference(_selectedWeek).inHours > 24 ||
+            _selectWeek(DateTime.now()).difference(_selectedWeek).inHours < -24;
     print("Refreshing!");
-    _timetable = await TimetableApi.fetch();
-    setState(() {});
-    _showRefreshSnackbar();
+    _timetable = await TimetableApi.fetch(
+        new DateFormat('yyyy-MM-dd').format(_selectedWeek));
+    print("Refreshed!");
+    _setState(() {});
+    if (showSnackbar) _showRefreshSnackbar();
   }
 
   void _showRefreshSnackbar() {
-    final scaffold = Scaffold.of(context);
+    final scaffold = Scaffold.of(_ctx);
     var now = new DateTime.now();
     scaffold.showSnackBar(
       SnackBar(
@@ -42,13 +91,22 @@ class _TimetableFragmentState extends State<TimetableFragment> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      child: ListView.builder(
-          itemCount: _timetable.keys.length,
-          itemBuilder: (context, int dayIndex) => DayWidget(
-              _timetable[_timetable.keys.toList()[dayIndex]],
-              _timetable.keys.toList()[dayIndex])),
-      onRefresh: _refresh,
+    return StatefulBuilder(
+      builder: (context, setState) {
+        _setState = setState;
+        _ctx = context;
+        return RefreshIndicator(
+          child: ListView.builder(
+              itemCount: _timetable.keys.length,
+              itemBuilder: (context, int dayIndex) => DayWidget(
+                  _timetable[_timetable.keys.toList()[dayIndex]],
+                  _timetable.keys.toList()[dayIndex],
+                  _notCurrentWeek)),
+          onRefresh: () async {
+            await _refresh(true);
+          },
+        );
+      },
     );
   }
 }
@@ -56,8 +114,9 @@ class _TimetableFragmentState extends State<TimetableFragment> {
 class DayWidget extends StatelessWidget {
   dynamic _day;
   dynamic _key;
+  dynamic _notCurrentWeek;
 
-  DayWidget(this._day, this._key);
+  DayWidget(this._day, this._key, this._notCurrentWeek);
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +130,8 @@ class DayWidget extends StatelessWidget {
                 child: Container(
                   child: Text(
                     _processWeekday(new DateFormat('EEEE')
-                        .format(DateFormat("yyyy-MM-dd").parse(_key))),
+                            .format(DateFormat("yyyy-MM-dd").parse(_key))) +
+                        (_notCurrentWeek ? ' ($_key)' : ''),
                     style:
                         TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
                   ),
