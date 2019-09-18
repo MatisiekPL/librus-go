@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:librus_go/api/store.dart';
@@ -86,7 +88,7 @@ class DayWidget extends StatelessWidget {
                           ? _day[lessonIndex].length
                           : 0,
                       itemBuilder: (context, ind) =>
-                          LessonWidget(_day[lessonIndex][ind]))),
+                          LessonWidget(_day[lessonIndex][ind], _key))),
             ],
           );
   }
@@ -124,8 +126,107 @@ class DayWidget extends StatelessWidget {
 
 class LessonWidget extends StatelessWidget {
   dynamic _lesson;
+  dynamic _key;
 
-  LessonWidget(this._lesson);
+  LessonWidget(this._lesson, this._key);
+
+  void _showDetails(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Szczegóły"),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    'Lekcja:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(capitalize(_lesson['Subject']['Name'])),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Numer lekcji:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(capitalize(_lesson['LessonNo'])),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Kiedy:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  StatefulBuilder(builder: (context, setState) {
+                    var timer = '';
+                    if (new DateFormat('yyyy-MM-dd')
+                                .format(DateTime.now())
+                                .toString() ==
+                            _key ||
+                        new DateFormat('yyyy-MM-dd')
+                                .format(DateTime.now().add(Duration(days: 1)))
+                                .toString() ==
+                            _key) {
+                      var diff = new DateFormat('yyyy-MM-dd HH:mm')
+                          .parse('$_key ${_lesson['HourFrom']}')
+                          .difference(DateTime.now());
+                      timer = ' (';
+                      if (diff.inHours != 0)
+                        timer = '$timer ${diff.inHours} godz.';
+                      if (diff.inMinutes != 0)
+                        timer =
+                            '$timer ${diff.inMinutes - diff.inHours * 60} min.';
+                      if (diff.inSeconds != 0)
+                        timer =
+                            '$timer ${diff.inSeconds - diff.inHours * 3600 - (diff.inMinutes - diff.inHours * 60) * 60} sekund';
+                      new Timer.periodic(
+                          Duration(seconds: 1), (Timer t) => setState(() {}));
+                    }
+                    return Text(
+                        '${_lesson['HourFrom']} - ${_lesson['HourTo']} $timer');
+                  }),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Container(
+                    child: _lesson['classroom'] != null
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                'Klasa:',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text(capitalize(_lesson['classroom']['Symbol'])),
+                              SizedBox(
+                                height: 8.0,
+                              ),
+                            ],
+                          )
+                        : Container(),
+                  ),
+                  Text(
+                    'Nauczyciel:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                      '${capitalize(_lesson['Teacher']['FirstName'])} ${capitalize(_lesson['Teacher']['LastName'])}'),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                new FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: new Text("OK"))
+              ],
+            ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -220,30 +321,5 @@ class LessonWidget extends StatelessWidget {
               ),
             ),
     );
-  }
-
-  void _showDetails(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              title: Text("Szczegóły"),
-              content: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    'Lekcja:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              actions: <Widget>[
-                new FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: new Text("OK"))
-              ],
-            ));
   }
 }
