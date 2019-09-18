@@ -161,26 +161,32 @@ class LessonWidget extends StatelessWidget {
                   ),
                   StatefulBuilder(builder: (context, setState) {
                     var timer = '';
-                    if (new DateFormat('yyyy-MM-dd')
-                                .format(DateTime.now())
-                                .toString() ==
-                            _key ||
-                        new DateFormat('yyyy-MM-dd')
-                                .format(DateTime.now().add(Duration(days: 1)))
-                                .toString() ==
-                            _key) {
+                    if ((new DateFormat('yyyy-MM-dd')
+                                    .format(DateTime.now())
+                                    .toString() ==
+                                _key ||
+                            new DateFormat('yyyy-MM-dd')
+                                    .format(
+                                        DateTime.now().add(Duration(days: 1)))
+                                    .toString() ==
+                                _key) &&
+                        (new DateFormat('yyyy-MM-dd HH:mm')
+                                .parse('$_key ${_lesson['HourFrom']}')
+                                .difference(DateTime.now())
+                                .inMilliseconds >
+                            0)) {
                       var diff = new DateFormat('yyyy-MM-dd HH:mm')
                           .parse('$_key ${_lesson['HourFrom']}')
                           .difference(DateTime.now());
                       timer = ' (';
                       if (diff.inHours != 0)
-                        timer = '$timer ${diff.inHours} godz.';
+                        timer = '$timer${diff.inHours} godz. ';
                       if (diff.inMinutes != 0)
                         timer =
-                            '$timer ${diff.inMinutes - diff.inHours * 60} min.';
+                            '$timer${diff.inMinutes - diff.inHours * 60} min. ';
                       if (diff.inSeconds != 0)
                         timer =
-                            '$timer ${diff.inSeconds - diff.inHours * 3600 - (diff.inMinutes - diff.inHours * 60) * 60} sekund';
+                            '$timer${diff.inSeconds - diff.inHours * 3600 - (diff.inMinutes - diff.inHours * 60) * 60} sekund)';
                       new Timer.periodic(
                           Duration(seconds: 1), (Timer t) => setState(() {}));
                     }
