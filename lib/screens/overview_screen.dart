@@ -8,6 +8,7 @@ import 'package:librus_go/fragments/calendar_fragment.dart';
 import 'package:librus_go/fragments/grades_fragment.dart';
 import 'package:librus_go/fragments/timetable_fragment.dart';
 import 'package:librus_go/misc/draw_circle.dart';
+import 'package:librus_go/screens/about_screen.dart';
 import 'package:librus_go/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -130,7 +131,10 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     ListTile(
                       leading: Icon(Icons.lightbulb_outline),
                       title: Text('O aplikacji'),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => AboutScreen()));
+                      },
                     ),
                     Divider(),
                     ListTile(
