@@ -64,7 +64,7 @@ class _AboutScreenState extends State<AboutScreen> {
           RaisedButton(
             onPressed: () {
               launch(
-                  'mailto:matisiek11@gmail.com?subject=Opinia%20Librus%20Go');
+                  'mailto:librusgo@outlook.com?subject=Opinia%20Librus%20Go');
             },
             child: Text(
               'Kontakt',

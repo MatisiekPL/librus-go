@@ -139,7 +139,7 @@ class _CalendarFragmentState extends State<CalendarFragment>
                           ],
                         );
                       },
-                      itemCount: _selectedEvents.length,
+                      itemCount: (_selectedEvents ?? []).length,
                     )
                   : Container();
             })

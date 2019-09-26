@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/date_symbol_data_file.dart';
 import 'package:librus_go/api/store.dart';
 import 'package:librus_go/fragments/calendar_fragment.dart';
+import 'package:librus_go/fragments/desk_fragment.dart';
 import 'package:librus_go/fragments/grades_fragment.dart';
 import 'package:librus_go/fragments/timetable_fragment.dart';
 import 'package:librus_go/misc/draw_circle.dart';
@@ -25,8 +26,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
   }
 
   _initAsync() async {
-    Store.fragmentSubject.add(GradesFragment());
-    Store.titleSubject.add('Oceny');
+    Store.fragmentSubject.add(DeskFragment());
+    Store.titleSubject.add('Biurko');
     Store.overviewScreenSetState = () {
       setState(() {});
     };
@@ -69,7 +70,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text('Przegląd'),
+                          Text('Biurko'),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
@@ -79,6 +80,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
                         ],
                       ),
                       onTap: () {
+                        Store.fragmentSubject.add(DeskFragment());
+                        Store.titleSubject.add('Biurko');
                         Navigator.of(context).pop();
                       },
                     ),

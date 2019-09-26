@@ -13,7 +13,7 @@ class GradesFragment extends StatefulWidget {
 }
 
 class _GradesFragmentState extends State<GradesFragment> {
-  dynamic _semesters = {};
+  dynamic _semesters;
   dynamic _selectedSemester = 1;
 
   @override
@@ -133,14 +133,15 @@ class _GradesFragmentState extends State<GradesFragment> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: _refresh,
-      child: _semesters.keys.length == 0
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _semesters[_selectedSemester].length,
-              itemBuilder: (context, int subjectIndex) =>
-                  SubjectWidget(_semesters[_selectedSemester][subjectIndex])),
-    );
+        onRefresh: _refresh,
+        child: _semesters == null
+            ? Center(child: CircularProgressIndicator())
+            : (_semesters.keys.length == 0
+                ? Center(child: Text('Brak ocen'))
+                : ListView.builder(
+                    itemCount: _semesters[_selectedSemester].length,
+                    itemBuilder: (context, int subjectIndex) => SubjectWidget(
+                        _semesters[_selectedSemester][subjectIndex]))));
   }
 }
 
@@ -422,7 +423,8 @@ class GradeWidget extends StatelessWidget {
                           .parse(_grade['AddDate'])
                           .millisecondsSinceEpoch
                   ? Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(
+                          left: 8.0, right: 16.0, top: 8.0, bottom: 8.0),
                       child: Container(
                         child: CustomPaint(painter: DrawCircle()),
                       ),

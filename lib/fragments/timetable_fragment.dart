@@ -297,95 +297,103 @@ class LessonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () {
-        _showDetails(context);
-      },
-      child: _lesson['Subject']['Name'] == 'Okienko'
-          ? Container()
-          : Container(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        CircleAvatar(
-                          backgroundColor: Colors.blue,
-                          child: Text(
-                            _lesson['LessonNo'] ?? '',
-                            style: TextStyle(
-                              color: Colors.white,
-                              decoration: _lesson['IsCanceled'] != null &&
-                                      _lesson['IsCanceled']
-                                  ? TextDecoration.lineThrough
-                                  : TextDecoration.none,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Column(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          _showDetails(context);
+        },
+        child: _lesson['Subject']['Name'] == 'Okienko'
+            ? Container()
+            : Column(
+                children: <Widget>[
+                  Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Text(
-                                    capitalize(_lesson['Subject']['Name']),
-                                    style: TextStyle(
-                                        decoration:
-                                            _lesson['IsCanceled'] != null &&
-                                                    _lesson['IsCanceled']
-                                                ? TextDecoration.lineThrough
-                                                : TextDecoration.none,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  _lesson['IsCanceled'] != null &&
-                                          _lesson['IsCanceled']
-                                      ? Text(' - (Odwołane)',
-                                          style: TextStyle(
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.w500))
-                                      : Container()
-                                ],
-                              ),
-                              Text(
-                                '${_lesson['HourFrom'].toString()} - ${_lesson['HourTo'].toString()}',
-                                style: TextStyle(
+                              CircleAvatar(
+                                backgroundColor: Colors.blue,
+                                child: Text(
+                                  _lesson['LessonNo'] ?? '',
+                                  style: TextStyle(
+                                    color: Colors.white,
                                     decoration: _lesson['IsCanceled'] != null &&
                                             _lesson['IsCanceled']
                                         ? TextDecoration.lineThrough
                                         : TextDecoration.none,
-                                    fontSize: 16.0,
-                                    fontStyle: FontStyle.italic),
-                              )
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        Text(
+                                          capitalize(
+                                              _lesson['Subject']['Name']),
+                                          style: TextStyle(
+                                              decoration:
+                                                  _lesson['IsCanceled'] !=
+                                                              null &&
+                                                          _lesson['IsCanceled']
+                                                      ? TextDecoration
+                                                          .lineThrough
+                                                      : TextDecoration.none,
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        _lesson['IsCanceled'] != null &&
+                                                _lesson['IsCanceled']
+                                            ? Text(' - (Odwołane)',
+                                                style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    fontWeight:
+                                                        FontWeight.w500))
+                                            : Container()
+                                      ],
+                                    ),
+                                    Text(
+                                      '${_lesson['HourFrom'].toString()} - ${_lesson['HourTo'].toString()}',
+                                      style: TextStyle(
+                                          decoration:
+                                              _lesson['IsCanceled'] != null &&
+                                                      _lesson['IsCanceled']
+                                                  ? TextDecoration.lineThrough
+                                                  : TextDecoration.none,
+                                          fontSize: 16.0,
+                                          fontStyle: FontStyle.italic),
+                                    )
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                                child: Text(
+                              _lesson['classroom'] != null
+                                  ? _lesson['classroom']['Symbol']
+                                  : '',
+                              style: TextStyle(
+                                decoration: _lesson['IsCanceled'] != null &&
+                                        _lesson['IsCanceled']
+                                    ? TextDecoration.lineThrough
+                                    : TextDecoration.none,
+                              ),
+                            )),
+                          )
+                        ],
+                      ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                          child: Text(
-                        _lesson['classroom'] != null
-                            ? _lesson['classroom']['Symbol']
-                            : '',
-                        style: TextStyle(
-                          decoration: _lesson['IsCanceled'] != null &&
-                                  _lesson['IsCanceled']
-                              ? TextDecoration.lineThrough
-                              : TextDecoration.none,
-                        ),
-                      )),
-                    )
-                  ],
-                ),
-              ),
-            ),
-    );
+                  ),
+                ],
+              ));
   }
 }
