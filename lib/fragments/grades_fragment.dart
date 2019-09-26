@@ -111,7 +111,7 @@ class _GradesFragmentState extends State<GradesFragment> {
 
   Future<void> _refresh() async {
     print("Refreshing!");
-    _semesters = await GradesApi.fetch();
+    _semesters = await GradesApi.fetch(null);
     try {
       setState(() {});
     } catch (err) {}
@@ -179,6 +179,9 @@ class SubjectWidget extends StatelessWidget {
                   physics: ClampingScrollPhysics(),
                   itemBuilder: (context, int gradeIndex) {
                     _subject["grades"][gradeIndex]['simulate'] = _simulate;
+                    _subject["grades"][gradeIndex]['subject'] = {
+                      'Name': _subject['Name'],
+                    };
                     return GradeWidget(_subject["grades"][gradeIndex]);
                   }),
             ],
@@ -452,6 +455,16 @@ class GradeWidget extends StatelessWidget {
                   ),
                   Text(
                     _grade['Grade'],
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Przedmiot:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    _grade['subject']['Name'],
                   ),
                   SizedBox(
                     height: 8.0,

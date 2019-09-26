@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class GradesApi {
   static String apiUrl = 'https://api.librus.pl/2.0';
 
-  static Future<dynamic> fetch() async {
+  static Future<dynamic> fetch(timeFilter) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var synergiaToken = prefs.getString("synergia_token");
     var dio = Dio();
@@ -21,6 +21,14 @@ class GradesApi {
         (await dio.get('$apiUrl/Grades/Categories')).data['Categories'] as List;
     var users = (await dio.get('$apiUrl/Users')).data['Users'] as List;
     print('Fetched data of grades. Merging...');
+    if (timeFilter != null)
+      grades = grades
+          .where((dynamic grade) =>
+              DateFormat("yyyy-MM-dd HH:mm:ss")
+                  .parse(grade['AddDate'])
+                  .millisecondsSinceEpoch >
+              timeFilter)
+          .toList();
     grades.forEach((dynamic grade) => grade["category"] =
         (categories.firstWhere(
                 (dynamic category) => category["Id"] == grade["Category"]["Id"])
