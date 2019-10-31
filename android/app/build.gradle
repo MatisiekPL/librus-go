@@ -25,6 +25,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+def vcode = (int)(((new Date().getTime()/1000) - 1451606400) / 10)
+
 android {
     compileSdkVersion 28
 
@@ -41,8 +43,8 @@ android {
         applicationId "pl.enteam.librus_go"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        versionCode vcode.toInteger()
+        versionName vcode.toString()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
