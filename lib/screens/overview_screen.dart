@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/date_symbol_data_file.dart';
 import 'package:librus_go/api/store.dart';
+import 'package:librus_go/fragments/calendar_fragment.dart';
+import 'package:librus_go/fragments/desk_fragment.dart';
 import 'package:librus_go/fragments/grades_fragment.dart';
 import 'package:librus_go/fragments/timetable_fragment.dart';
 import 'package:librus_go/misc/draw_circle.dart';
+import 'package:librus_go/screens/about_screen.dart';
 import 'package:librus_go/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,8 +26,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
   }
 
   _initAsync() async {
-    Store.fragmentSubject.add(GradesFragment());
-    Store.titleSubject.add('Oceny');
+    Store.fragmentSubject.add(DeskFragment());
+    Store.titleSubject.add('Biurko');
     Store.overviewScreenSetState = () {
       setState(() {});
     };
@@ -67,7 +70,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text('Przegląd'),
+                          Text('Biurko'),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
@@ -77,6 +80,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
                         ],
                       ),
                       onTap: () {
+                        Store.fragmentSubject.add(DeskFragment());
+                        Store.titleSubject.add('Biurko');
                         Navigator.of(context).pop();
                       },
                     ),
@@ -114,7 +119,11 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     ListTile(
                       leading: Icon(Icons.calendar_today),
                       title: Text('Kalendarz'),
-                      onTap: () {},
+                      onTap: () {
+                        Store.fragmentSubject.add(CalendarFragment());
+                        Store.titleSubject.add('Kalendarz');
+                        Navigator.of(context).pop();
+                      },
                     ),
                     Divider(),
                     ListTile(
@@ -125,7 +134,10 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     ListTile(
                       leading: Icon(Icons.lightbulb_outline),
                       title: Text('O aplikacji'),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => AboutScreen()));
+                      },
                     ),
                     Divider(),
                     ListTile(

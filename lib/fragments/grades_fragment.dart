@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:librus_go/api/grades_api.dart';
@@ -11,7 +13,7 @@ class GradesFragment extends StatefulWidget {
 }
 
 class _GradesFragmentState extends State<GradesFragment> {
-  dynamic _semesters = {};
+  dynamic _semesters;
   dynamic _selectedSemester = 1;
 
   @override
@@ -25,6 +27,9 @@ class _GradesFragmentState extends State<GradesFragment> {
             case "mark_as_read":
               _markAsRead();
               break;
+            case "switch_semester":
+              _switchSemester();
+              break;
           }
         },
         itemBuilder: (context) {
@@ -32,12 +37,59 @@ class _GradesFragmentState extends State<GradesFragment> {
             PopupMenuItem<String>(
               value: 'mark_as_read',
               child: Text('Oznacz jako przeczytane'),
+            ),
+            PopupMenuItem<String>(
+              value: 'switch_semester',
+              child: Text('Zmień semestr'),
             )
           ];
         },
       )
     ]);
     _refresh();
+  }
+
+  Future<void> _switchSemester() async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Zmień semestr"),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(
+                    _semesters.keys.length,
+                    (index) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            _semesters.keys.length > 1 && index != 0
+                                ? SizedBox(
+                                    height: 16.0,
+                                  )
+                                : Container(),
+                            GestureDetector(
+                              child: Text(
+                                'Semestr ${_semesters.keys.toList()[index]}',
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  _selectedSemester =
+                                      _semesters.keys.toList()[index];
+                                });
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        )).toList(),
+              ),
+              actions: <Widget>[
+                new FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: new Text("Anuluj"))
+              ],
+            ));
   }
 
   Future<void> _markAsRead() async {
@@ -59,7 +111,7 @@ class _GradesFragmentState extends State<GradesFragment> {
 
   Future<void> _refresh() async {
     print("Refreshing!");
-    _semesters = await GradesApi.fetch();
+    _semesters = await GradesApi.fetch(null);
     try {
       setState(() {});
     } catch (err) {}
@@ -81,14 +133,15 @@ class _GradesFragmentState extends State<GradesFragment> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: _refresh,
-      child: _semesters.keys.length == 0
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _semesters[_selectedSemester].length,
-              itemBuilder: (context, int subjectIndex) =>
-                  SubjectWidget(_semesters[_selectedSemester][subjectIndex])),
-    );
+        onRefresh: _refresh,
+        child: _semesters == null
+            ? Center(child: CircularProgressIndicator())
+            : (_semesters.keys.length == 0
+                ? Center(child: Text('Brak ocen'))
+                : ListView.builder(
+                    itemCount: _semesters[_selectedSemester].length,
+                    itemBuilder: (context, int subjectIndex) => SubjectWidget(
+                        _semesters[_selectedSemester][subjectIndex]))));
   }
 }
 
@@ -106,13 +159,17 @@ class SubjectWidget extends StatelessWidget {
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 56.0, top: 20.0),
-                child: Container(
-                  child: Text(
-                    capitalize(_subject["Name"]),
-                    style:
-                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+              GestureDetector(
+                onTap: () => _simulate(context),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 56.0, top: 20.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Text(
+                      capitalize(_subject["Name"]),
+                      style: TextStyle(
+                          fontSize: 22.0, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ),
@@ -120,10 +177,197 @@ class SubjectWidget extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: _subject["grades"].length,
                   physics: ClampingScrollPhysics(),
-                  itemBuilder: (context, int gradeIndex) =>
-                      GradeWidget(_subject["grades"][gradeIndex])),
+                  itemBuilder: (context, int gradeIndex) {
+                    _subject["grades"][gradeIndex]['simulate'] = _simulate;
+                    _subject["grades"][gradeIndex]['subject'] = {
+                      'Name': _subject['Name'],
+                    };
+                    return GradeWidget(_subject["grades"][gradeIndex]);
+                  }),
             ],
           );
+  }
+
+  double _calculateAverage(grades) {
+    double counter = 0.0;
+    double denominator = 0.0;
+    if (grades.length < 1) denominator = 1.0;
+    grades.forEach((grade) {
+      if (grade['category']['CountToTheAverage'] != null &&
+          grade['category']['CountToTheAverage']) {
+        denominator = denominator + grade['category']['Weight'].toDouble();
+        counter = counter +
+            grade['category']['Weight'].toDouble() *
+                (grade['Grade'].toString().contains('+')
+                        ? int.parse(
+                                grade['Grade'].toString().replaceAll("+", "")) +
+                            0.5
+                        : (grade['Grade']
+                                .toString()
+                                .contains('-')
+                            ? int.parse(grade['Grade']
+                                    .toString()
+                                    .replaceAll("-", "")) -
+                                0.5
+                            : int.parse(grade['Grade'])))
+                    .toDouble();
+      }
+    });
+    return counter / denominator;
+  }
+
+  Future<void> _simulate(BuildContext context) async {
+    var grades = (_subject['grades'] as List)
+        .where((grade) => grade['category']['CountToTheAverage'])
+        .toList();
+    var dialogSetState;
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Szczegóły dla: ${_subject['Name']}"),
+              content: StatefulBuilder(
+                builder: (context, setState) {
+                  dialogSetState = setState;
+                  var average = _calculateAverage(grades) != double.nan
+                      ? _calculateAverage(grades).toStringAsFixed(2)
+                      : 'brak';
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        'Średnia bieżąca symulowana: $average',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 16.0,
+                      ),
+                      Text(
+                        'Oceny:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 8.0,
+                      ),
+                      Column(
+                        children: List.generate(grades.length, (int index) {
+                          var grade = grades[index];
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                grades.remove(grade);
+                              });
+                            },
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  '• Ocena ${grade['Grade']} wagi ${grade['category']['Weight']}',
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                )
+                              ],
+                            ),
+                          );
+                        }),
+                      ),
+                      SizedBox(
+                        height: 16.0,
+                      ),
+                      Text(
+                        'Dotyknij ocenę, by zasymulować jej usunięcie',
+                      ),
+                    ],
+                  );
+                },
+              ),
+              actions: <Widget>[
+                new FlatButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                                title: Text('Dodaj ocenę'),
+                                content: Builder(builder: (context) {
+                                  var gradeValue = "1";
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      new Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text('Ocena: '),
+                                          Builder(builder: (context) {
+                                            String selection = gradeValue;
+                                            return StatefulBuilder(
+                                                builder: (context, setState) {
+                                              var counter = -1;
+                                              return DropdownButton<String>(
+                                                items:
+                                                    List.generate(18, (index) {
+                                                  var target = ((index + 2) / 3)
+                                                      .round()
+                                                      .toString();
+                                                  if (counter == -1)
+                                                    target = target + "-";
+                                                  if (counter == 1)
+                                                    target = target + "+";
+                                                  counter++;
+                                                  if (counter > 1) counter = -1;
+                                                  return DropdownMenuItem(
+                                                    value: target.toString(),
+                                                    child: Text(
+                                                      target.toString(),
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    selection = value;
+                                                    gradeValue = selection;
+                                                  });
+                                                },
+                                                value: selection,
+                                              );
+                                            });
+                                          }),
+                                          SizedBox(
+                                            width: 16.0,
+                                          ),
+                                          Text('Waga: '),
+                                          DropdownButton<int>(
+                                              value: 1,
+                                              onChanged: (value) {
+                                                grades.add({
+                                                  'Grade': gradeValue,
+                                                  'category': {
+                                                    'Weight': value,
+                                                    'CountToTheAverage': true
+                                                  }
+                                                });
+                                                dialogSetState(() {});
+                                                Navigator.of(context).pop();
+                                              },
+                                              items: List.generate(
+                                                  9,
+                                                  (weight) => DropdownMenuItem(
+                                                        value: (weight + 1),
+                                                        child: Text((weight + 1)
+                                                            .toString()),
+                                                      )).toList())
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                }),
+                              ));
+                    },
+                    child: new Text("Dodaj ocenę")),
+                new FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: new Text("OK"))
+              ],
+            ));
   }
 }
 
@@ -141,6 +385,7 @@ class GradeWidget extends StatelessWidget {
         _showDetails(context);
       },
       child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -181,7 +426,8 @@ class GradeWidget extends StatelessWidget {
                           .parse(_grade['AddDate'])
                           .millisecondsSinceEpoch
                   ? Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(
+                          left: 8.0, right: 16.0, top: 8.0, bottom: 8.0),
                       child: Container(
                         child: CustomPaint(painter: DrawCircle()),
                       ),
@@ -209,6 +455,16 @@ class GradeWidget extends StatelessWidget {
                   ),
                   Text(
                     _grade['Grade'],
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Przedmiot:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    _grade['subject']['Name'],
                   ),
                   SizedBox(
                     height: 8.0,
@@ -265,6 +521,12 @@ class GradeWidget extends StatelessWidget {
                 ],
               ),
               actions: <Widget>[
+                new FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _grade['simulate'](context);
+                    },
+                    child: new Text("Otwórz symulator średniej")),
                 new FlatButton(
                     onPressed: () {
                       Navigator.of(context).pop();

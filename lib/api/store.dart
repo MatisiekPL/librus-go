@@ -121,4 +121,5 @@ class Store {
   }
 }
 
-String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+String capitalize(String s) =>
+    s.length > 0 ? s[0].toUpperCase() + s.substring(1) : '';
