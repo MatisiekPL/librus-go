@@ -30,9 +30,9 @@ class CalendarApi {
         (await dio.get('$apiUrl/ParentTeacherConferences'))
             .data['ParentTeacherConferences'] as List;
     homeworks.forEach((homework) {
-      homework['subject'] = (subjects.firstWhere(
+      homework['subject'] = homework["Subject"] != null ? (subjects.firstWhere(
               (dynamic subject) => subject["Id"] == homework["Subject"]["Id"])
-          as dynamic);
+          as dynamic) : null;
       homework['category'] = (categories.firstWhere((dynamic category) =>
           category["Id"] == homework["Category"]["Id"]) as dynamic);
     });
