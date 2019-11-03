@@ -40,9 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextField(
                       controller: _usernameFieldController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Adres e-mail'),
+                      decoration: InputDecoration(labelText: 'Adres e-mail'),
                     ),
                     SizedBox(
                       height: 16.0,
@@ -50,8 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextField(
                       controller: _passwordFieldController,
                       obscureText: true,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(), hintText: 'Hasło'),
+                      decoration: InputDecoration(labelText: 'Hasło'),
                     ),
                     SizedBox(
                       height: 16.0,

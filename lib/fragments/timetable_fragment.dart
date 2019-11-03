@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:librus_go/api/store.dart';
 import 'package:librus_go/api/timetable_api.dart';
 import 'package:librus_go/misc/draw_circle.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 class TimetableFragment extends StatefulWidget {
   @override
@@ -17,6 +18,10 @@ class _TimetableFragmentState extends State<TimetableFragment> {
   static bool _notCurrentWeek = false;
   dynamic _setState;
   dynamic _ctx;
+
+  final _scrollController = AutoScrollController(
+    axis: Axis.horizontal,
+  );
 
   DateTime _selectWeek(time) {
     var monday = 1;
@@ -75,6 +80,8 @@ class _TimetableFragmentState extends State<TimetableFragment> {
     print("Refreshed!");
     _setState(() {});
     if (showSnackbar) _showRefreshSnackbar();
+    _scrollController.scrollToIndex(DateTime.now().weekday + 1,
+        preferPosition: AutoScrollPosition.begin, duration: Duration(milliseconds: 1000));
   }
 
   void _showRefreshSnackbar() {
@@ -97,11 +104,16 @@ class _TimetableFragmentState extends State<TimetableFragment> {
         _ctx = context;
         return RefreshIndicator(
           child: ListView.builder(
+              controller: _scrollController,
               itemCount: _timetable.keys.length,
-              itemBuilder: (context, int dayIndex) => DayWidget(
-                  _timetable[_timetable.keys.toList()[dayIndex]],
-                  _timetable.keys.toList()[dayIndex],
-                  _notCurrentWeek)),
+              itemBuilder: (context, int dayIndex) => AutoScrollTag(
+                  key: ValueKey(dayIndex),
+                  index: dayIndex,
+                  controller: _scrollController,
+                  child: DayWidget(
+                      _timetable[_timetable.keys.toList()[dayIndex]],
+                      _timetable.keys.toList()[dayIndex],
+                      _notCurrentWeek))),
           onRefresh: () async {
             await _refresh(true);
           },

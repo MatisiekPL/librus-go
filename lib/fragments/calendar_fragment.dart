@@ -91,9 +91,9 @@ class _CalendarFragmentState extends State<CalendarFragment>
                       outsideDaysVisible: false,
                     ),
                     availableCalendarFormats: const {
-                      CalendarFormat.month: 'Miesiąc',
-                      CalendarFormat.twoWeeks: '2 tyg.',
-                      CalendarFormat.week: 'Tydzień',
+                      CalendarFormat.month: 'Tydzień',
+                      CalendarFormat.twoWeeks: 'Miesiąc',
+                      CalendarFormat.week: '2 tyg.',
                     },
                     headerStyle: HeaderStyle(
                       formatButtonTextStyle: TextStyle()
