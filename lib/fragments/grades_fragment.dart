@@ -194,23 +194,24 @@ class SubjectWidget extends StatelessWidget {
     if (grades.length < 1) denominator = 1.0;
     grades.forEach((grade) {
       if (grade['category']['CountToTheAverage'] != null &&
-          grade['category']['CountToTheAverage']) {
-        denominator = denominator + grade['category']['Weight'].toDouble();
-        counter = counter +
-            grade['category']['Weight'].toDouble() *
-                (grade['Grade'].toString().contains('+')
-                        ? int.parse(
-                                grade['Grade'].toString().replaceAll("+", "")) +
-                            0.5
-                        : (grade['Grade']
-                                .toString()
-                                .contains('-')
-                            ? int.parse(grade['Grade']
-                                    .toString()
-                                    .replaceAll("-", "")) -
-                                0.5
-                            : int.parse(grade['Grade'])))
-                    .toDouble();
+          grade['category']['CountToTheAverage'] && grade['Grade'] != "0") {
+        try {
+          counter = counter +
+              grade['category']['Weight'].toDouble() *
+                  (grade['Grade'].toString().contains('+')
+                          ? int.parse(grade['Grade']
+                                  .toString()
+                                  .replaceAll("+", "")) +
+                              0.5
+                          : (grade['Grade'].toString().contains('-')
+                              ? int.parse(grade['Grade']
+                                      .toString()
+                                      .replaceAll("-", "")) -
+                                  0.5
+                              : int.parse(grade['Grade'])))
+                      .toDouble();
+          denominator = denominator + grade['category']['Weight'].toDouble();
+        } catch (err) {}
       }
     });
     return counter / denominator;
@@ -526,7 +527,7 @@ class GradeWidget extends StatelessWidget {
                       Navigator.of(context).pop();
                       _grade['simulate'](context);
                     },
-                    child: new Text("Otwórz symulator średniej")),
+                    child: new Text("Sprawdź średnią")),
                 new FlatButton(
                     onPressed: () {
                       Navigator.of(context).pop();
