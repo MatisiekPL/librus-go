@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/date_symbol_data_file.dart';
 import 'package:librus_go/api/store.dart';
+import 'package:librus_go/fragments/absences_fragment.dart';
 import 'package:librus_go/fragments/calendar_fragment.dart';
 import 'package:librus_go/fragments/desk_fragment.dart';
 import 'package:librus_go/fragments/grades_fragment.dart';
@@ -122,6 +123,15 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       onTap: () {
                         Store.fragmentSubject.add(CalendarFragment());
                         Store.titleSubject.add('Kalendarz');
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.done_outline),
+                      title: Text('Nieobecności'),
+                      onTap: () {
+                        Store.fragmentSubject.add(AbsencesFragment());
+                        Store.titleSubject.add('Nieobecności');
                         Navigator.of(context).pop();
                       },
                     ),
