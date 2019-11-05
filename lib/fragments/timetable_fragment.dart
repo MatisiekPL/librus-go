@@ -80,8 +80,10 @@ class _TimetableFragmentState extends State<TimetableFragment> {
     print("Refreshed!");
     _setState(() {});
     if (showSnackbar) _showRefreshSnackbar();
-    _scrollController.scrollToIndex(DateTime.now().weekday + 1,
-        preferPosition: AutoScrollPosition.begin, duration: Duration(milliseconds: 1000));
+    if (!_notCurrentWeek)
+      _scrollController.scrollToIndex(DateTime.now().weekday - 1,
+          preferPosition: AutoScrollPosition.begin,
+          duration: Duration(milliseconds: 1000));
   }
 
   void _showRefreshSnackbar() {
@@ -103,17 +105,19 @@ class _TimetableFragmentState extends State<TimetableFragment> {
         _setState = setState;
         _ctx = context;
         return RefreshIndicator(
-          child: ListView.builder(
-              controller: _scrollController,
-              itemCount: _timetable.keys.length,
-              itemBuilder: (context, int dayIndex) => AutoScrollTag(
-                  key: ValueKey(dayIndex),
-                  index: dayIndex,
+          child: _timetable.keys.isEmpty
+              ? Center(child: CircularProgressIndicator())
+              : ListView.builder(
                   controller: _scrollController,
-                  child: DayWidget(
-                      _timetable[_timetable.keys.toList()[dayIndex]],
-                      _timetable.keys.toList()[dayIndex],
-                      _notCurrentWeek))),
+                  itemCount: _timetable.keys.length,
+                  itemBuilder: (context, int dayIndex) => AutoScrollTag(
+                      key: ValueKey(dayIndex),
+                      index: dayIndex,
+                      controller: _scrollController,
+                      child: DayWidget(
+                          _timetable[_timetable.keys.toList()[dayIndex]],
+                          _timetable.keys.toList()[dayIndex],
+                          _notCurrentWeek))),
           onRefresh: () async {
             await _refresh(true);
           },

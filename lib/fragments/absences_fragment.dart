@@ -37,39 +37,42 @@ class _AbsencesFragmentState extends State<AbsencesFragment> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await _refresh();
-      },
-      child: ListView(
-        children: <Widget>[
-          Builder(builder: (context) {
-            if (_data.isEmpty)
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            List<LessonBeing> statistics = [];
-            _data.forEach((item) {
-              if (!statistics
-                  .any((LessonBeing being) => being.id == item['type']['Id']))
-                statistics.add(
-                    LessonBeing(item['type']['Id'], item['type']['Name'], 0));
-              statistics = statistics.map((LessonBeing being) {
-                if (being.id == item['type']['Id']) {
-                  return LessonBeing(being.id, being.type, being.count + 1);
-                }
-                return being;
-              }).toList();
-            });
-            // statistics = statistics.map((LessonBeing being) {
-            //   return LessonBeing(being.id, being.type,
-            //       (being.count / _data.length * 100).floor());
-            // }).toList();
-            return AttendancesChart(statistics);
-          })
-        ],
-      ),
-    );
+    return _data.isEmpty
+        ? Center(child: CircularProgressIndicator())
+        : RefreshIndicator(
+            onRefresh: () async {
+              await _refresh();
+            },
+            child: ListView(
+              children: <Widget>[
+                Builder(builder: (context) {
+                  if (_data.isEmpty)
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  List<LessonBeing> statistics = [];
+                  _data.forEach((item) {
+                    if (!statistics.any(
+                        (LessonBeing being) => being.id == item['type']['Id']))
+                      statistics.add(LessonBeing(
+                          item['type']['Id'], item['type']['Name'], 0));
+                    statistics = statistics.map((LessonBeing being) {
+                      if (being.id == item['type']['Id']) {
+                        return LessonBeing(
+                            being.id, being.type, being.count + 1);
+                      }
+                      return being;
+                    }).toList();
+                  });
+                  // statistics = statistics.map((LessonBeing being) {
+                  //   return LessonBeing(being.id, being.type,
+                  //       (being.count / _data.length * 100).floor());
+                  // }).toList();
+                  return AttendancesChart(statistics);
+                })
+              ],
+            ),
+          );
   }
 }
 
@@ -123,7 +126,7 @@ class AttendancesChart extends StatelessWidget {
                       legendDefaultMeasure:
                           charts.LegendDefaultMeasure.firstValue,
                       measureFormatter: (num value) {
-                        return value == null ? '-' : '- $value';
+                        return value == null ? '-' : '$value';
                       },
                     )
                   ],

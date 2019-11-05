@@ -139,6 +139,7 @@ class _GradesFragmentState extends State<GradesFragment> {
             : (_semesters.keys.length == 0
                 ? Center(child: Text('Brak ocen'))
                 : ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     itemCount: _semesters[_selectedSemester].length,
                     itemBuilder: (context, int subjectIndex) => SubjectWidget(
                         _semesters[_selectedSemester][subjectIndex]))));
@@ -154,6 +155,11 @@ class SubjectWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    (_subject["grades"] as List<dynamic>).sort((a, b) =>
+        (DateTime.parse(a["AddDate"]).millisecondsSinceEpoch <
+                DateTime.parse(b["AddDate"]).millisecondsSinceEpoch)
+            ? 1
+            : 0);
     return _subject["grades"].length == 0
         ? Container()
         : Column(
@@ -175,7 +181,7 @@ class SubjectWidget extends StatelessWidget {
               ),
               ListView.builder(
                   shrinkWrap: true,
-                  itemCount: _subject["grades"].length,
+                  itemCount: (_subject["grades"] as List).length,
                   physics: ClampingScrollPhysics(),
                   itemBuilder: (context, int gradeIndex) {
                     _subject["grades"][gradeIndex]['simulate'] = _simulate;
@@ -194,7 +200,8 @@ class SubjectWidget extends StatelessWidget {
     if (grades.length < 1) denominator = 1.0;
     grades.forEach((grade) {
       if (grade['category']['CountToTheAverage'] != null &&
-          grade['category']['CountToTheAverage'] && grade['Grade'] != "0") {
+          grade['category']['CountToTheAverage'] &&
+          grade['Grade'] != "0") {
         try {
           counter = counter +
               grade['category']['Weight'].toDouble() *
