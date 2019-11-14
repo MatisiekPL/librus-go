@@ -22,6 +22,7 @@ dependencies:
   firebase_analytics: ^5.0.2
   scroll_to_index: ^1.0.2
   charts_flutter: ^0.8.1
+  flutter_local_notifications: ^0.8.4
 
 dev_dependencies:
   flutter_test:

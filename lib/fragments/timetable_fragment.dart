@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:librus_go/api/store.dart';
 import 'package:librus_go/api/timetable_api.dart';
 import 'package:librus_go/misc/draw_circle.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+
+import '../main.dart';
 
 class TimetableFragment extends StatefulWidget {
   @override
@@ -51,6 +54,16 @@ class _TimetableFragmentState extends State<TimetableFragment> {
               });
               await _refresh(false);
               break;
+            case 3:
+              var pendingNotificationRequests =
+                  await flutterLocalNotificationsPlugin
+                      .pendingNotificationRequests();
+              for (var pendingNotificationRequest
+                  in pendingNotificationRequests) {
+                print(
+                    'pending notification: [id: ${pendingNotificationRequest.id}, title: ${pendingNotificationRequest.title}, body: ${pendingNotificationRequest.body}, payload: ${pendingNotificationRequest.payload}]');
+              }
+              break;
           }
         },
         itemBuilder: (context) {
@@ -62,7 +75,8 @@ class _TimetableFragmentState extends State<TimetableFragment> {
             PopupMenuItem<int>(
               value: 2,
               child: Text('Poprzedni tydzień'),
-            )
+            ),
+            PopupMenuItem<int>(value: 3, child: Text('debuguj'))
           ];
         },
       )
@@ -163,10 +177,56 @@ class DayWidget extends StatelessWidget {
                       itemCount: _day[lessonIndex] != null
                           ? _day[lessonIndex].length
                           : 0,
-                      itemBuilder: (context, ind) =>
-                          LessonWidget(_day[lessonIndex][ind], _key))),
+                      itemBuilder: (context, ind) {
+                        // _scheduleNotification(_day[lessonIndex][ind], _key);
+                        // return LessonWidget(_day[lessonIndex ][ind], _key);
+                        return Builder(builder: (context) {
+                          _scheduleNotification(_day[lessonIndex][ind], _key);
+                          return LessonWidget(_day[lessonIndex][ind], _key);
+                        });
+                      })),
             ],
           );
+  }
+
+  static List scheduledLessons = [];
+
+  _scheduleNotification(dynamic lesson, key) async {
+    // scheduledLessons = [];
+    if (lesson['HourFrom'] != "" &&
+        !scheduledLessons.contains(int.parse(lesson['Lesson']['Id']))) {
+      for (int i = 0; i < 45; i++) {
+        var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+            'Timetable', 'Plan lekcji', 'Powiadomienia o planie lekcji',
+            importance: Importance.Low,
+            priority: Priority.Min,
+            icon: 'app_icon',
+            ticker: 'ticker',
+            enableVibration: false,
+            enableLights: false,
+            showProgress: true,
+            maxProgress: 45,
+            progress: i);
+        var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+        var platformChannelSpecifics = NotificationDetails(
+            androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+        if (DateTime.parse('$key ${lesson['HourFrom']}')
+                .add(Duration(minutes: i))
+                .millisecondsSinceEpoch >
+            DateTime.now().millisecondsSinceEpoch) {
+          print(DateTime.parse('$key ${lesson['HourFrom']}')
+              .add(Duration(minutes: i)));
+          await flutterLocalNotificationsPlugin.schedule(
+              int.parse(lesson['Lesson']['Id']),
+              lesson['Subject']['Name'],
+              'Pozostało: ${45 - i}',
+              DateTime.parse('$key ${lesson['HourFrom']}')
+                  .add(Duration(minutes: i)),
+              platformChannelSpecifics);
+        }
+        scheduledLessons.add(int.parse(lesson['Lesson']['Id']));
+      }
+    }
   }
 
   String _translateWeekday(String weekday) {

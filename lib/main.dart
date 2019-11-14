@@ -1,6 +1,7 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:librus_go/screens/login_screen.dart';
 import 'package:librus_go/screens/offline_screen.dart';
@@ -9,8 +10,10 @@ import 'package:librus_go/screens/overview_screen.dart';
 import 'api/store.dart';
 
 FirebaseAnalytics analytics = FirebaseAnalytics();
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 void main() {
+  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   initializeDateFormatting().then((_) {
     Store.init();
     runApp(App());
