@@ -13,11 +13,27 @@ class _AboutScreenState extends State<AboutScreen> {
     return Scaffold(
         body: SafeArea(
             child: ListView(children: <Widget>[
+      GestureDetector(
+        onTap: () {
+          Navigator.of(context).pop();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Container(
+            alignment: Alignment.topLeft,
+            child: Icon(
+              Icons.clear,
+              color: Colors.black,
+              size: 32.0,
+            ),
+          ),
+        ),
+      ),
       Padding(
         padding: const EdgeInsets.only(top: 64.0),
         child: Icon(
           Icons.school,
-          color: Colors.blueGrey,
+          color: Colors.blue,
           size: 232.0,
           semanticLabel: 'Librus Go',
         ),
@@ -75,16 +91,16 @@ class _AboutScreenState extends State<AboutScreen> {
           SizedBox(
             height: 8.0,
           ),
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-            child: Icon(
-              Icons.arrow_back,
-              color: Colors.blueGrey,
-              size: 32.0,
-            ),
-          ),
+//          GestureDetector(
+//            onTap: () {
+//              Navigator.of(context).pop();
+//            },
+//            child: Icon(
+//              Icons.arrow_back,
+//              color: Colors.blueGrey,
+//              size: 32.0,
+//            ),
+//          ),
         ],
       ),
     ])));
