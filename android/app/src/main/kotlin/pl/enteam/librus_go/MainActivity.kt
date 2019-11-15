@@ -3,11 +3,11 @@ package pl.enteam.librus_go
 import android.os.Bundle
 import android.provider.Settings
 
-import io.flutter.app.FlutterActivity
+import io.flutter.app.FlutterFragmentActivity
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 
-class MainActivity: FlutterActivity() {
+class MainActivity: FlutterFragmentActivity() {
 
   private val CHANNEL = "librus_go.enteam.pl/utils"
 

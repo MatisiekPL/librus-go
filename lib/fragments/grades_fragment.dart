@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:librus_go/api/grades_api.dart';
 import 'package:librus_go/api/store.dart';
 import 'package:librus_go/misc/draw_circle.dart';
+import 'package:local_auth/auth_strings.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GradesFragment extends StatefulWidget {
