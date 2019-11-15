@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:librus_go/api/store.dart';
 import 'package:librus_go/screens/overview_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -101,6 +102,9 @@ class _LoginScreenState extends State<LoginScreen> {
       _loading = false;
     });
     if (success) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(
+          "grade_read_time", new DateTime.now().millisecondsSinceEpoch);
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => OverviewScreen()));
     }
