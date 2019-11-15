@@ -216,7 +216,7 @@ class SubjectWidget extends StatelessWidget {
                               ? int.parse(grade['Grade']
                                       .toString()
                                       .replaceAll("-", "")) -
-                                  0.5
+                                  0.25
                               : int.parse(grade['Grade'])))
                       .toDouble();
           denominator = denominator + grade['category']['Weight'].toDouble();
