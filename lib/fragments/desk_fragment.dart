@@ -22,9 +22,6 @@ class _DeskFragmentState extends State<DeskFragment> {
   Future<void> _refresh() async {
     _lastGrades = new List<dynamic>();
     print("Refreshing!");
-    var now = DateTime.now();
-//    var filter = new DateTime(now.year, now.month, 20, 0, 0, 0, 0, 0);
-//    _semesters = await GradesApi.fetch(filter.millisecondsSinceEpoch);
     _semesters = await GradesApi.fetch(null);
     _semesters.forEach((dynamic key, dynamic semester) {
       semester.forEach((dynamic subject) {

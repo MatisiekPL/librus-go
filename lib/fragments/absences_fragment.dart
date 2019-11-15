@@ -64,10 +64,6 @@ class _AbsencesFragmentState extends State<AbsencesFragment> {
                       return being;
                     }).toList();
                   });
-                  // statistics = statistics.map((LessonBeing being) {
-                  //   return LessonBeing(being.id, being.type,
-                  //       (being.count / _data.length * 100).floor());
-                  // }).toList();
                   return AttendancesChart(statistics);
                 })
               ],
