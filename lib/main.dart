@@ -58,7 +58,7 @@ class App extends StatelessWidget {
     if (connectivityResult == ConnectivityResult.mobile ||
         connectivityResult == ConnectivityResult.wifi) {
       if (await Store.attempt()) {
-        if (!await _authenticate()) return AccessDenied();
+//        if (!await _authenticate()) return AccessDenied();
         return OverviewScreen();
       }
       return LoginScreen();
