@@ -8,6 +8,7 @@ import 'package:librus_go/fragments/absences_fragment.dart';
 import 'package:librus_go/fragments/calendar_fragment.dart';
 import 'package:librus_go/fragments/desk_fragment.dart';
 import 'package:librus_go/fragments/grades_fragment.dart';
+import 'package:librus_go/fragments/settings_fragment.dart';
 import 'package:librus_go/fragments/timetable_fragment.dart';
 import 'package:librus_go/misc/draw_circle.dart';
 import 'package:librus_go/screens/about_screen.dart';
@@ -139,7 +140,11 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     ListTile(
                       leading: Icon(Icons.settings),
                       title: Text('Ustawienia'),
-                      onTap: () {},
+                      onTap: () {
+                        Store.fragmentSubject.add(SettingsFragment());
+                        Store.titleSubject.add('Ustawienia');
+                        Navigator.of(context).pop();
+                      },
                     ),
                     ListTile(
                       leading: Icon(Icons.lightbulb_outline),

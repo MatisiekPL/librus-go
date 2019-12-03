@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 class DrawCircle extends CustomPainter {
   Paint _paint;
 
-  DrawCircle() {
+  DrawCircle({color = Colors.purple, size = 10.0}) {
     _paint = Paint()
-      ..color = Colors.purple
-      ..strokeWidth = 10.0
+      ..color = color
+      ..strokeWidth = size
       ..style = PaintingStyle.fill;
   }
 

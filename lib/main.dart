@@ -8,6 +8,7 @@ import 'package:librus_go/screens/offline_screen.dart';
 import 'package:librus_go/screens/overview_screen.dart';
 import 'package:local_auth/auth_strings.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:preferences/preference_service.dart';
 
 import 'api/store.dart';
 
@@ -16,13 +17,14 @@ FirebaseAnalytics analytics = FirebaseAnalytics();
 const platform = const MethodChannel('librus_go.enteam.pl/utils');
 
 Future<bool> checkIfRunningInAutomatedTestsEnvironment() async {
-  WidgetsFlutterBinding.ensureInitialized();
   return await platform.invokeMethod("checkIfInAutomatedTestsEnvironment")
       as bool;
 }
 
 void main() {
   initializeDateFormatting()
+      .then((_) => WidgetsFlutterBinding.ensureInitialized())
+      .then((_) => PrefService.init(prefix: 'pref_'))
       .then((_) => checkIfRunningInAutomatedTestsEnvironment())
       .then((result) {
     if (result) {
@@ -58,7 +60,11 @@ class App extends StatelessWidget {
     if (connectivityResult == ConnectivityResult.mobile ||
         connectivityResult == ConnectivityResult.wifi) {
       if (await Store.attempt()) {
-//        if (!await _authenticate()) return AccessDenied();
+        if (PrefService.getBool("biometric_login") != null &&
+            PrefService.getBool("biometric_login")) {
+          if (!await _authenticate()) return AccessDenied();
+          return OverviewScreen();
+        }
         return OverviewScreen();
       }
       return LoginScreen();
@@ -123,3 +129,6 @@ class AccessDenied extends StatelessWidget {
     );
   }
 }
+
+String trim(String input, int n) =>
+    input.length > n ? input.substring(0, n) + '...' : input;
