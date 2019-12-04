@@ -8,6 +8,7 @@ import 'package:librus_go/fragments/absences_fragment.dart';
 import 'package:librus_go/fragments/calendar_fragment.dart';
 import 'package:librus_go/fragments/desk_fragment.dart';
 import 'package:librus_go/fragments/grades_fragment.dart';
+import 'package:librus_go/fragments/notices_fragment.dart';
 import 'package:librus_go/fragments/settings_fragment.dart';
 import 'package:librus_go/fragments/timetable_fragment.dart';
 import 'package:librus_go/misc/draw_circle.dart';
@@ -133,6 +134,15 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       onTap: () {
                         Store.fragmentSubject.add(AbsencesFragment());
                         Store.titleSubject.add('Nieobecności');
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.mail_outline),
+                      title: Text('Ogłoszenia'),
+                      onTap: () {
+                        Store.fragmentSubject.add(NoticesFragment());
+                        Store.titleSubject.add('Ogłoszenia');
                         Navigator.of(context).pop();
                       },
                     ),
