@@ -15,6 +15,9 @@ class NoticesApi {
     }));
     var notices =
         (await dio.get('$apiUrl/SchoolNotices')).data['SchoolNotices'] as List;
+    var users = (await dio.get('$apiUrl/Users')).data['Users'] as List;
+    notices.forEach((dynamic notice) => notice["addedBy"] = (users.firstWhere(
+        (dynamic user) => user["Id"] == notice["AddedBy"]["Id"]) as dynamic));
     return notices;
   }
 }
