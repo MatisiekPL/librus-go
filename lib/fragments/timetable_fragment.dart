@@ -7,6 +7,8 @@ import 'package:librus_go/api/timetable_api.dart';
 import 'package:librus_go/misc/draw_circle.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../main.dart';
+
 class TimetableFragment extends StatefulWidget {
   @override
   _TimetableFragmentState createState() => _TimetableFragmentState();
@@ -312,70 +314,47 @@ class LessonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () {
-          _showDetails(context);
-        },
-        child: _lesson['Subject']['Name'] == 'Okienko'
-            ? Container()
-            : Column(
-                children: <Widget>[
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    var child = Stack(
+      children: <Widget>[
+        Padding(
+          //padding: const EdgeInsets.only(right: 16.0),
+          padding: const EdgeInsets.all(0),
+          child: Column(
+            children: <Widget>[
+              Container(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              CircleAvatar(
-                                backgroundColor: Colors.blue,
-                                child: Text(
-                                  _lesson['LessonNo'] ?? '',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    decoration: _lesson['IsCanceled'] != null &&
-                                            _lesson['IsCanceled']
-                                        ? TextDecoration.lineThrough
-                                        : TextDecoration.none,
-                                  ),
-                                ),
+                          CircleAvatar(
+                            backgroundColor: Colors.blue,
+                            child: Text(
+                              _lesson['LessonNo'] ?? '',
+                              style: TextStyle(
+                                color: Colors.white,
+                                decoration: _lesson['IsCanceled'] != null &&
+                                        _lesson['IsCanceled']
+                                    ? TextDecoration.lineThrough
+                                    : TextDecoration.none,
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
                                   children: <Widget>[
-                                    Row(
-                                      children: <Widget>[
-                                        Text(
+                                    Text(
+                                      trim(
                                           capitalize(
                                               _lesson['Subject']['Name']),
-                                          style: TextStyle(
-                                              decoration:
-                                                  _lesson['IsCanceled'] !=
-                                                              null &&
-                                                          _lesson['IsCanceled']
-                                                      ? TextDecoration
-                                                          .lineThrough
-                                                      : TextDecoration.none,
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.w500),
-                                        ),
-                                        _lesson['IsCanceled'] != null &&
-                                                _lesson['IsCanceled']
-                                            ? Text(' - (Odwołane)',
-                                                style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    fontWeight:
-                                                        FontWeight.w500))
-                                            : Container()
-                                      ],
-                                    ),
-                                    Text(
-                                      '${_lesson['HourFrom'].toString()} - ${_lesson['HourTo'].toString()}',
+                                          20),
                                       style: TextStyle(
                                           decoration:
                                               _lesson['IsCanceled'] != null &&
@@ -383,33 +362,105 @@ class LessonWidget extends StatelessWidget {
                                                   ? TextDecoration.lineThrough
                                                   : TextDecoration.none,
                                           fontSize: 16.0,
-                                          fontStyle: FontStyle.italic),
-                                    )
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    _lesson['IsCanceled'] != null &&
+                                            _lesson['IsCanceled']
+                                        ? Text(' - (Odwołane)',
+                                            style: TextStyle(
+                                                fontSize: 16.0,
+                                                fontWeight: FontWeight.w500))
+                                        : Container(),
+                                    (_lesson['IsCanceled'] != null &&
+                                                !_lesson['IsCanceled']) &&
+                                            _lesson['IsSubstitutionClass'] !=
+                                                null &&
+                                            _lesson['IsSubstitutionClass']
+                                        ? Text(' - (Zastępstwo)',
+                                            style: TextStyle(
+                                                fontSize: 16.0,
+                                                fontWeight: FontWeight.w500))
+                                        : Container()
                                   ],
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  '${_lesson['HourFrom'].toString()} - ${_lesson['HourTo'].toString()}',
+                                  style: TextStyle(
+                                      decoration:
+                                          _lesson['IsCanceled'] != null &&
+                                                  _lesson['IsCanceled']
+                                              ? TextDecoration.lineThrough
+                                              : TextDecoration.none,
+                                      fontSize: 16.0,
+                                      fontStyle: FontStyle.italic),
+                                )
+                              ],
+                            ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                                child: Text(
-                              _lesson['classroom'] != null
-                                  ? _lesson['classroom']['Symbol']
-                                  : '',
-                              style: TextStyle(
-                                decoration: _lesson['IsCanceled'] != null &&
-                                        _lesson['IsCanceled']
-                                    ? TextDecoration.lineThrough
-                                    : TextDecoration.none,
-                              ),
-                            )),
-                          )
                         ],
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                            child: Text(
+                          _lesson['classroom'] != null
+                              ? _lesson['classroom']['Symbol']
+                              : '',
+                          style: TextStyle(
+                            decoration: _lesson['IsCanceled'] != null &&
+                                    _lesson['IsCanceled']
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                          ),
+                        )),
+                      )
+                    ],
                   ),
-                ],
-              ));
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Container(
+        //   alignment: Alignment(1.0, 0.0),
+        //   child: Padding(
+        //     padding: const EdgeInsets.only(
+        //         left: 8.0, right: 16.0, top: 28.0, bottom: 8.0),
+        //     child: Container(
+        //       child: CustomPaint(painter: DrawCircle()),
+        //     ),
+        //   ),
+        // ),
+      ],
+    );
+    return GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          _showDetails(context);
+        },
+        child: _lesson['Subject']['Name'] == "Okienko"
+            ? Container()
+            : ((_lesson['IsCanceled'] ?? false) ||
+                    (_lesson['IsSubstitutionClass'] ?? false)
+                ? Stack(
+                    children: <Widget>[
+                      Card(
+                        child: child,
+                      ),
+                      Container(
+                        alignment: Alignment(-1.0, 0),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 48.0, right: 20.0, top: 20.0, bottom: 8.0),
+                          child: Container(
+                            child: CustomPaint(painter: DrawCircle(size: 16.0)),
+                          ),
+                        ),
+                      )
+                    ],
+                  )
+                : Container(
+                    child: child,
+                  )));
   }
 }
