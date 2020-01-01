@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:librus_go/screens/overview_screen.dart';
 import 'package:local_auth/auth_strings.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:preferences/preference_service.dart';
+import 'package:sentry/sentry.dart';
 
 import 'api/store.dart';
 
@@ -21,6 +24,9 @@ Future<bool> checkIfRunningInAutomatedTestsEnvironment() async {
       as bool;
 }
 
+final SentryClient sentry = new SentryClient(
+    dsn: "https://b31fd2f23caa45e2b999a3ccc9f81d35@sentry.io/1869678");
+
 void main() {
   initializeDateFormatting()
       .then((_) => WidgetsFlutterBinding.ensureInitialized())
@@ -32,7 +38,21 @@ void main() {
       return;
     }
     Store.init();
-    runApp(App());
+    runZoned(
+      () => runApp(App()),
+      onError: (Object error, StackTrace stackTrace) {
+        try {
+          sentry.captureException(
+            exception: error,
+            stackTrace: stackTrace,
+          );
+          print('Error sent to sentry.io: $error');
+        } catch (e) {
+          print('Sending report to sentry.io failed: $e');
+          print('Original error: $error');
+        }
+      },
+    );
   });
 }
 

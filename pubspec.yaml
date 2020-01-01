@@ -24,6 +24,7 @@ dependencies:
   charts_flutter: ^0.8.1
   local_auth: ^0.6.0+1
   preferences: ^5.0.2
+  sentry: ">=2.0.0 <3.0.0"
 
 dev_dependencies:
   flutter_test:
