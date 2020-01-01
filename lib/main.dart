@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -16,6 +17,7 @@ import 'package:sentry/sentry.dart';
 import 'api/store.dart';
 
 FirebaseAnalytics analytics = FirebaseAnalytics();
+FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
 const platform = const MethodChannel('librus_go.enteam.pl/utils');
 
@@ -37,6 +39,11 @@ void main() {
       runApp(StopRobot());
       return;
     }
+    _firebaseMessaging.getToken().then((token) {
+      print("---FCM---");
+      print(token);
+      print("---FCM---");
+    });
     Store.init();
     runZoned(
       () => runApp(App()),

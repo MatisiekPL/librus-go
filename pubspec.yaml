@@ -25,6 +25,7 @@ dependencies:
   local_auth: ^0.6.0+1
   preferences: ^5.0.2
   sentry: ">=2.0.0 <3.0.0"
+  firebase_messaging: ^6.0.9
 
 dev_dependencies:
   flutter_test:
