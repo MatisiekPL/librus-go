@@ -55,6 +55,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
         stream: Store.actionsSubject,
         builder: (context, actionsSnap) => Scaffold(
               appBar: AppBar(
+                  backgroundColor: const Color(0xFF2255FF),
                   actions: actionsSnap.data != null ? actionsSnap.data : null,
                   title: StreamBuilder(
                     stream: Store.titleSubject,
@@ -66,12 +67,13 @@ class _OverviewScreenState extends State<OverviewScreen> {
                   padding: EdgeInsets.zero,
                   children: <Widget>[
                     UserAccountsDrawerHeader(
+                      decoration: BoxDecoration(color: const Color(0xFF2255FF)),
                       accountName: Text(Store.synergiaAccount["studentName"]),
                       accountEmail: Text(Store.synergiaAccount["login"]),
                       currentAccountPicture: CircleAvatar(
                         backgroundColor:
                             Theme.of(context).platform == TargetPlatform.iOS
-                                ? Colors.blue
+                                ? const Color(0xFF2255FF)
                                 : Colors.white,
                         child: Text(
                           Store.synergiaAccount["studentName"][0]

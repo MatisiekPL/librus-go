@@ -33,7 +33,7 @@ class _AboutScreenState extends State<AboutScreen> {
         padding: const EdgeInsets.only(top: 64.0),
         child: Icon(
           Icons.school,
-          color: Colors.blue,
+          color: const Color(0xFF2255FF),
           size: 232.0,
           semanticLabel: 'Librus Go',
         ),
@@ -86,7 +86,7 @@ class _AboutScreenState extends State<AboutScreen> {
               'Kontakt',
               style: TextStyle(color: Colors.white),
             ),
-            color: Colors.blue,
+            color: const Color(0xFF2255FF),
           ),
           SizedBox(
             height: 8.0,
@@ -97,7 +97,7 @@ class _AboutScreenState extends State<AboutScreen> {
 //            },
 //            child: Icon(
 //              Icons.arrow_back,
-//              color: Colors.blueGrey,
+//              color: const Color(0xFF2255FF)Grey,
 //              size: 32.0,
 //            ),
 //          ),

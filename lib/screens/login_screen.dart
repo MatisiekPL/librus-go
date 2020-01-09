@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
                         RaisedButton(
-                          color: Colors.blue,
+                          color: const Color(0xFF2255FF),
                           child: Text(
                             'Wejdź',
                             style: TextStyle(color: Colors.white),

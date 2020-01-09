@@ -301,7 +301,7 @@ class _DeskFragmentState extends State<DeskFragment> {
                                               CrossAxisAlignment.start,
                                           children: <Widget>[
                                             CircleAvatar(
-                                              backgroundColor: Colors.blue,
+                                              backgroundColor: const Color(0xFF2255FF),
                                               child: Text(
                                                 _lastGrades[gradeIndex]
                                                         ['Grade'] ??
@@ -421,7 +421,7 @@ class _DeskFragmentState extends State<DeskFragment> {
 //                             crossAxisAlignment: CrossAxisAlignment.start,
 //                             children: <Widget>[
 //                               CircleAvatar(
-//                                 backgroundColor: Colors.blue,
+//                                 backgroundColor: const Color(0xFF2255FF),
 //                                 child: Text(
 //                                   '1' ?? '',
 //                                   style: TextStyle(
@@ -499,7 +499,7 @@ class _DeskFragmentState extends State<DeskFragment> {
 //                             crossAxisAlignment: CrossAxisAlignment.start,
 //                             children: <Widget>[
 //                               CircleAvatar(
-//                                 backgroundColor: Colors.blue,
+//                                 backgroundColor: const Color(0xFF2255FF),
 //                                 child: Text(
 //                                   '1' ?? '',
 //                                   style: TextStyle(

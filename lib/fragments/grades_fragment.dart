@@ -405,7 +405,7 @@ class GradeWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   CircleAvatar(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: const Color(0xFF2255FF),
                     child: Text(
                       _grade["Grade"],
                       style: TextStyle(color: Colors.white),

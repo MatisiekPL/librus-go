@@ -122,7 +122,8 @@ class StopRobot extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Librus Go",
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+          primarySwatch: Colors.blue, primaryColor: const Color(0xFF2255FF)),
       home: Scaffold(
         body: Center(
             child: Padding(
