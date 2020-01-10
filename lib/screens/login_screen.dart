@@ -116,8 +116,10 @@ class Logo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(48.0),
-      child: Image.asset(
-        'assets/logo.png',
+      child: ClipOval(
+        child: Image.asset(
+          'assets/logo.png',
+        ),
       ),
     );
   }

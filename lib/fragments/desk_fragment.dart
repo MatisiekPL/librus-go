@@ -301,7 +301,8 @@ class _DeskFragmentState extends State<DeskFragment> {
                                               CrossAxisAlignment.start,
                                           children: <Widget>[
                                             CircleAvatar(
-                                              backgroundColor: const Color(0xFF2255FF),
+                                              backgroundColor:
+                                                  const Color(0xFF2255FF),
                                               child: Text(
                                                 _lastGrades[gradeIndex]
                                                         ['Grade'] ??
