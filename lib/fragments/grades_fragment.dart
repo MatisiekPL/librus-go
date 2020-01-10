@@ -118,6 +118,9 @@ class _GradesFragmentState extends State<GradesFragment> {
       setState(() {});
     } catch (err) {}
     _showRefreshSnackbar();
+    setState(() {
+      _selectedSemester = _semesters.keys.last;
+    });
   }
 
   void _showRefreshSnackbar() {
@@ -142,9 +145,10 @@ class _GradesFragmentState extends State<GradesFragment> {
                 ? Center(child: Text('Brak ocen'))
                 : ListView.builder(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: _semesters[_selectedSemester].length,
+                    itemCount: _semesters[_selectedSemester.toString()].length,
                     itemBuilder: (context, int subjectIndex) => SubjectWidget(
-                        _semesters[_selectedSemester][subjectIndex]))));
+                        _semesters[_selectedSemester.toString()]
+                            [subjectIndex]))));
   }
 }
 

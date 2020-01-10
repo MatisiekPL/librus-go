@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:librus_go/api/store.dart';
@@ -44,11 +46,15 @@ class GradesApi {
       var semesterData = [];
       subjects.forEach((dynamic subject) => semesterData.add(subject));
       semesterData.forEach((dynamic subject) => subject['grades'] = []);
-      grades.forEach((dynamic grade) => (semesterData.firstWhere(
-                  (dynamic subject) => subject["Id"] == grade["Subject"]["Id"])
-              as dynamic)["grades"]
-          .add(grade));
-      out[semester] = semesterData;
+      grades.forEach((dynamic grade) {
+        try {
+          var sub = (semesterData.firstWhere(
+              (dynamic subject) => (subject["Id"] == grade["Subject"]["Id"]),
+              orElse: () => {'grades': []}) as dynamic);
+          if (grade["Semester"] == semester) sub['grades'].add(grade);
+        } catch (err) {}
+      });
+      out[semester.toString()] = json.decode(json.encode(semesterData));
     });
     print('Merging completed');
     Store.gradeReadTime = prefs.getInt("grade_read_time") ?? 0;
