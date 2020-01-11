@@ -1,6 +1,9 @@
 <div align="center">
     <h1>Librus Go 🌺  </h1>
-    <img src="https://app.bitrise.io/app/02c3e6938829bff8/status.svg?token=2T7T9IQFtjRdyMZokjfqPw&branch=master">
+    <img src="https://app.bitrise.io/app/02c3e6938829bff8/status.svg?token=2T7T9IQFtjRdyMZokjfqPw&branch=master" style="float:left">
+    <img src="https://travis-ci.com/MatisiekPL/librus-go.svg?branch=master" style="float:left">
+    <a href='https://coveralls.io/github/MatisiekPL/librus-go?branch=master' style="float:left; margin-left: 8px;"><img src='https://coveralls.io/repos/github/MatisiekPL/librus-go/badge.svg?branch=master' alt='Coverage Status' /></a>
+
 </div>
 <br>
 <div align="center">

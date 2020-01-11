@@ -133,8 +133,10 @@ class DayWidget extends StatelessWidget {
   dynamic _day;
   dynamic _key;
   dynamic _notCurrentWeek;
+  final bool showTitle;
 
-  DayWidget(this._day, this._key, this._notCurrentWeek);
+  DayWidget(this._day, this._key, this._notCurrentWeek,
+      {this.showTitle = true});
 
   @override
   Widget build(BuildContext context) {
@@ -143,18 +145,20 @@ class DayWidget extends StatelessWidget {
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 56.0, top: 20.0),
-                child: Container(
-                  child: Text(
-                    _processWeekday(new DateFormat('EEEE')
-                            .format(DateFormat("yyyy-MM-dd").parse(_key))) +
-                        (_notCurrentWeek ? ' ($_key)' : ''),
-                    style:
-                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
+              showTitle
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 56.0, top: 20.0),
+                      child: Container(
+                        child: Text(
+                          _processWeekday(new DateFormat('EEEE').format(
+                                  DateFormat("yyyy-MM-dd").parse(_key))) +
+                              (_notCurrentWeek ? ' ($_key)' : ''),
+                          style: TextStyle(
+                              fontSize: 22.0, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    )
+                  : Container(),
               ListView.builder(
                   shrinkWrap: true,
                   itemCount: _day.length,

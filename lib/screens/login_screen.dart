@@ -105,8 +105,8 @@ class _LoginScreenState extends State<LoginScreen> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setInt(
           "grade_read_time", new DateTime.now().millisecondsSinceEpoch);
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => OverviewScreen()));
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => OverviewScreen()));
     }
   }
 }
@@ -116,8 +116,10 @@ class Logo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(48.0),
-      child: Image.asset(
-        'assets/logo.png',
+      child: ClipOval(
+        child: Image.asset(
+          'assets/logo.png',
+        ),
       ),
     );
   }

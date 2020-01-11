@@ -26,6 +26,7 @@ dependencies:
   preferences: ^5.0.2
   sentry: ">=2.0.0 <3.0.0"
   firebase_messaging: ^6.0.9
+  syncfusion_flutter_charts: ^17.4.40
 
 dev_dependencies:
   flutter_test:

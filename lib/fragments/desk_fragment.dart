@@ -1,8 +1,12 @@
+import 'dart:convert';
+
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:librus_go/api/grades_api.dart';
 import 'package:librus_go/api/store.dart';
 import 'package:librus_go/api/timetable_api.dart';
+import 'package:librus_go/fragments/timetable_fragment.dart';
 
 class DeskFragment extends StatefulWidget {
   @override
@@ -33,6 +37,7 @@ class _DeskFragmentState extends State<DeskFragment> {
     _lastGrades = new List<dynamic>();
     print("Refreshing!");
     _semesters = await GradesApi.fetch(null);
+    setState(() {});
     _semesters.forEach((dynamic key, dynamic semester) {
       semester.forEach((dynamic subject) {
         subject['grades'].forEach((dynamic grade) {
@@ -301,7 +306,8 @@ class _DeskFragmentState extends State<DeskFragment> {
                                               CrossAxisAlignment.start,
                                           children: <Widget>[
                                             CircleAvatar(
-                                              backgroundColor: const Color(0xFF2255FF),
+                                              backgroundColor:
+                                                  const Color(0xFF2255FF),
                                               child: Text(
                                                 _lastGrades[gradeIndex]
                                                         ['Grade'] ??
@@ -572,15 +578,154 @@ class _DeskFragmentState extends State<DeskFragment> {
 //           ),
   }
 
+  Widget _buildGradesAverageChartCard() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      child: Card(
+          elevation: 2.0,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    'Średnia ocen',
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                SizedBox(
+                  height: 8.0,
+                ),
+                Container(
+                  height: 200.0,
+                  child: charts.TimeSeriesChart(
+                    _createGradesAverageData(),
+                    animate: true,
+                    dateTimeFactory: const charts.LocalDateTimeFactory(),
+                  ),
+                ),
+              ],
+            ),
+          )),
+    );
+  }
+
+  List<charts.Series<AverageDay, DateTime>> _createGradesAverageData() {
+    var data = <AverageDay>[];
+    var averageValues = {};
+    var averageDividers = {};
+    if (_semesters != null && _semesters.length > 0)
+      _semesters["1"].forEach((dynamic subject) {
+        if (subject['grades'] != null)
+          subject['grades'].forEach((dynamic grade) {
+            print(json.encode(grade));
+            if (grade['category']['CountToTheAverage'] != null &&
+                grade['category']['CountToTheAverage'] &&
+                grade['Grade'] != "0") {
+              if (averageValues[grade['Date']] == null)
+                averageValues[grade['Date']] = 0;
+              if (averageDividers[grade['Date']] == null)
+                averageDividers[grade['Date']] = 0;
+              try {
+                averageValues[grade['Date']] = averageValues[grade['Date']] +
+                    grade['category']['Weight'].toDouble() *
+                        (grade['Grade'].toString().contains('+')
+                                ? int.parse(grade['Grade']
+                                        .toString()
+                                        .replaceAll("+", "")) +
+                                    0.5
+                                : (grade['Grade'].toString().contains('-')
+                                    ? int.parse(grade['Grade']
+                                            .toString()
+                                            .replaceAll("-", "")) -
+                                        0.25
+                                    : int.parse(grade['Grade'])))
+                            .toDouble();
+                averageDividers[grade['Date']]++;
+              } catch (err) {}
+            }
+          });
+      });
+    averageValues.keys.forEach((date) {
+      data.add(AverageDay(DateTime.parse(date),
+          (averageValues[date] / averageDividers[date] as double)));
+    });
+    data.sort((a, b) {
+      return b.time.compareTo(a.time);
+    });
+    return [
+      new charts.Series<AverageDay, DateTime>(
+        id: 'Average',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (AverageDay sales, _) => sales.time,
+        measureFn: (AverageDay sales, _) => sales.value,
+        data: data.take(6).toList(),
+      )
+    ];
+  }
+
+  Widget _buildTodayCard() {
+    return _timetable[_timetable.keys.toList()[DateTime.now().weekday - 1]]
+            .every((dynamic day) => day[0]['Subject']['Name'] == 'Okienko')
+        ? Container()
+        : Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: Card(
+                elevation: 2.0,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          'Dziś',
+                          style: TextStyle(
+                              fontSize: 20.0, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 8.0,
+                      ),
+                      Container(
+                          child: DayWidget(
+                        _timetable[_timetable.keys
+                            .toList()[DateTime.now().weekday - 1]],
+                        _timetable.keys.toList()[DateTime.now().weekday - 1],
+                        false,
+                        showTitle: false,
+                      )),
+                    ],
+                  ),
+                )),
+          );
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       child: ListView(
-        children: <Widget>[_buildLastGradesCard(), _buildWhatsNowCard()],
+        children: <Widget>[
+          _buildLastGradesCard(),
+//          _buildWhatsNowCard(),
+//          _buildGradesAverageChartCard(),
+          _buildTodayCard()
+        ],
       ),
       onRefresh: () async {
         await _refresh();
       },
     );
   }
+}
+
+class AverageDay {
+  final DateTime time;
+  final double value;
+
+  AverageDay(this.time, this.value);
 }
