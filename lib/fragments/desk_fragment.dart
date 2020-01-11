@@ -668,41 +668,45 @@ class _DeskFragmentState extends State<DeskFragment> {
   }
 
   Widget _buildTodayCard() {
-    return _timetable[_timetable.keys.toList()[DateTime.now().weekday - 1]]
-            .every((dynamic day) => day[0]['Subject']['Name'] == 'Okienko')
-        ? Container()
-        : Padding(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-            child: Card(
-                elevation: 2.0,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          'Dziś',
-                          style: TextStyle(
-                              fontSize: 20.0, fontWeight: FontWeight.bold),
+    try {
+      return _timetable[_timetable.keys.toList()[DateTime.now().weekday - 1]]
+              .every((dynamic day) => day[0]['Subject']['Name'] == 'Okienko')
+          ? Container()
+          : Padding(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              child: Card(
+                  elevation: 2.0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            'Dziś',
+                            style: TextStyle(
+                                fontSize: 20.0, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 8.0,
-                      ),
-                      Container(
-                          child: DayWidget(
-                        _timetable[_timetable.keys
-                            .toList()[DateTime.now().weekday - 1]],
-                        _timetable.keys.toList()[DateTime.now().weekday - 1],
-                        false,
-                        showTitle: false,
-                      )),
-                    ],
-                  ),
-                )),
-          );
+                        SizedBox(
+                          height: 8.0,
+                        ),
+                        Container(
+                            child: DayWidget(
+                          _timetable[_timetable.keys
+                              .toList()[DateTime.now().weekday - 1]],
+                          _timetable.keys.toList()[DateTime.now().weekday - 1],
+                          false,
+                          showTitle: false,
+                        )),
+                      ],
+                    ),
+                  )),
+            );
+    } catch (err) {
+      return Container();
+    }
   }
 
   @override
