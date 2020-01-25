@@ -29,7 +29,6 @@ dependencies:
   syncfusion_flutter_charts: ^17.4.40
   firebase_in_app_messaging: ^0.1.1+1
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
