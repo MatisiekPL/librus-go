@@ -64,7 +64,7 @@ class _AboutScreenState extends State<AboutScreen> {
             height: 8.0,
           ),
           Text(
-            'Stworzone dla uczniów przez uczniów',
+            'Stworzone przez Mateusza Woźniaka',
             style: TextStyle(fontSize: 18.0),
           ),
           SizedBox(
@@ -80,10 +80,10 @@ class _AboutScreenState extends State<AboutScreen> {
           RaisedButton(
             onPressed: () {
               launch(
-                  'mailto:librusgo@outlook.com?subject=Opinia%20Librus%20Go');
+                  'https://discord.gg/4cqFrAU');
             },
             child: Text(
-              'Kontakt',
+              'Discord',
               style: TextStyle(color: Colors.white),
             ),
             color: const Color(0xFF2255FF),
