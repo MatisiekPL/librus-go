@@ -13,6 +13,8 @@ import 'package:local_auth/auth_strings.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:preferences/preference_service.dart';
 import 'package:sentry/sentry.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 
 import 'api/store.dart';
 
@@ -29,6 +31,13 @@ Future<bool> checkIfRunningInAutomatedTestsEnvironment() async {
 final SentryClient sentry = new SentryClient(
     dsn: "https://b31fd2f23caa45e2b999a3ccc9f81d35@sentry.io/1869678");
 
+Future<dynamic> _handleMessage(Map<String, dynamic> message) async {
+  if (message.containsKey("data")) {
+    var data = message["data"] as Map;
+    if (data.containsKey("url")) launch(data["url"]);
+  }
+}
+
 void main() {
   initializeDateFormatting()
       .then((_) => WidgetsFlutterBinding.ensureInitialized())
@@ -39,6 +48,10 @@ void main() {
       runApp(StopRobot());
       return;
     }
+    _firebaseMessaging.configure(
+      onMessage: _handleMessage,
+      onBackgroundMessage: _handleMessage,
+    );
     _firebaseMessaging.getToken().then((token) {
       print("---FCM---");
       print(token);
