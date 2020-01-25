@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -5,8 +7,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CalendarApi {
   static String apiUrl = 'https://api.librus.pl/2.0';
 
-  static Future<dynamic> fetch() async {
+  static Future<dynamic> fetch({bool force}) async {
+    if (force == null) force = false;
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!force && prefs.containsKey("calendar_cache")) {
+      var data = json.decode(prefs.getString("calendar_cache"));
+      var out = Map<DateTime, List>();
+      data.forEach((k, v) {
+        out[DateTime.parse(k)] = v;
+      });
+      return out;
+    }
     var synergiaToken = prefs.getString("synergia_token");
     var dio = Dio();
     dio.interceptors
@@ -30,9 +41,10 @@ class CalendarApi {
         (await dio.get('$apiUrl/ParentTeacherConferences'))
             .data['ParentTeacherConferences'] as List;
     homeworks.forEach((homework) {
-      homework['subject'] = homework["Subject"] != null ? (subjects.firstWhere(
-              (dynamic subject) => subject["Id"] == homework["Subject"]["Id"])
-          as dynamic) : null;
+      homework['subject'] = homework["Subject"] != null
+          ? (subjects.firstWhere((dynamic subject) =>
+              subject["Id"] == homework["Subject"]["Id"]) as dynamic)
+          : null;
       homework['category'] = (categories.firstWhere((dynamic category) =>
           category["Id"] == homework["Category"]["Id"]) as dynamic);
     });
@@ -121,6 +133,11 @@ class CalendarApi {
         submit(date.add(Duration(days: i)));
       }
     });
+    var cache = Map<String, dynamic>();
+    out.forEach((k, v) {
+      cache[k.toString()] = v;
+    });
+    await prefs.setString("calendar_cache", json.encode(cache));
     return out;
   }
 }

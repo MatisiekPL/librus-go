@@ -14,13 +14,13 @@ class _AbsencesFragmentState extends State<AbsencesFragment> {
   @override
   void initState() {
     super.initState();
-    _refresh();
+    _refresh(false);
   }
 
-  _refresh() async {
-    _data = await AbsencesApi.fetch();
+  _refresh(bool force) async {
+    _data = await AbsencesApi.fetch(force: force);
     setState(() {});
-    _showRefreshSnackbar();
+    if (force) _showRefreshSnackbar();
   }
 
   void _showRefreshSnackbar() {
@@ -41,7 +41,7 @@ class _AbsencesFragmentState extends State<AbsencesFragment> {
         ? Center(child: CircularProgressIndicator())
         : RefreshIndicator(
             onRefresh: () async {
-              await _refresh();
+              await _refresh(true);
             },
             child: ListView(
               children: <Widget>[

@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TimetableApi {
   static String apiUrl = 'https://api.librus.pl/2.0';
 
-  static Future<dynamic> fetch(String weekStart) async {
+  static Future<dynamic> fetch(String weekStart, {bool force}) async {
+    if (force == null) force = false;
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!force && prefs.containsKey("timetable_cache")) {
+      return json.decode(prefs.getString("timetable_cache"));
+    }
     var synergiaToken = prefs.getString("synergia_token");
     var dio = Dio();
     dio.interceptors
@@ -35,6 +41,7 @@ class TimetableApi {
         });
       });
     });
+    await prefs.setString("timetable_cache", json.encode(timetable));
     return timetable;
   }
 }

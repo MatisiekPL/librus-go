@@ -117,7 +117,7 @@ class _GradesFragmentState extends State<GradesFragment> {
     try {
       setState(() {});
     } catch (err) {}
-    _showRefreshSnackbar();
+    if (force) _showRefreshSnackbar();
     setState(() {
       _selectedSemester = _semesters.keys.last;
     });

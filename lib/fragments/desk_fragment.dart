@@ -24,7 +24,7 @@ class _DeskFragmentState extends State<DeskFragment> {
   void initState() {
     super.initState();
     Store.actionsSubject.add(<Widget>[]);
-    _refresh();
+    _refresh(false);
   }
 
   DateTime _selectWeek(time) {
@@ -33,10 +33,11 @@ class _DeskFragmentState extends State<DeskFragment> {
     return time;
   }
 
-  Future<void> _refresh() async {
+  Future<void> _refresh(bool force) async {
+    if (force == null) force = false;
     _lastGrades = new List<dynamic>();
     print("Refreshing!");
-    _semesters = await GradesApi.fetch(null);
+    _semesters = await GradesApi.fetch(null, force: force);
     setState(() {});
     _semesters.forEach((dynamic key, dynamic semester) {
       semester.forEach((dynamic subject) {
@@ -721,7 +722,7 @@ class _DeskFragmentState extends State<DeskFragment> {
         ],
       ),
       onRefresh: () async {
-        await _refresh();
+        await _refresh(true);
       },
     );
   }

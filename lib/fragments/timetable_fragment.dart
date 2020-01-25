@@ -44,14 +44,14 @@ class _TimetableFragmentState extends State<TimetableFragment> {
               _setState(() {
                 _timetable = new Map();
               });
-              await _refresh(false);
+              await _refresh(false, true);
               break;
             case 2:
               _selectedWeek = _selectedWeek.subtract(Duration(days: 7));
               _setState(() {
                 _timetable = new Map();
               });
-              await _refresh(false);
+              await _refresh(false, true);
               break;
           }
         },
@@ -69,10 +69,11 @@ class _TimetableFragmentState extends State<TimetableFragment> {
         },
       )
     ]);
-    _refresh(true);
+    _refresh(true, false);
   }
 
-  Future<void> _refresh(bool showSnackbar) async {
+  Future<void> _refresh(bool showSnackbar, bool force) async {
+    if(force == null) force = false;
     _notCurrentWeek =
         _selectWeek(DateTime.now()).difference(_selectedWeek).inHours > 24 ||
             _selectWeek(DateTime.now()).difference(_selectedWeek).inHours < -24;
@@ -81,7 +82,7 @@ class _TimetableFragmentState extends State<TimetableFragment> {
         new DateFormat('yyyy-MM-dd').format(_selectedWeek));
     print("Refreshed!");
     _setState(() {});
-    if (showSnackbar) _showRefreshSnackbar();
+    if (showSnackbar && force) _showRefreshSnackbar();
     if (!_notCurrentWeek)
       _scrollController.scrollToIndex(DateTime.now().weekday - 1,
           preferPosition: AutoScrollPosition.begin,
@@ -121,7 +122,7 @@ class _TimetableFragmentState extends State<TimetableFragment> {
                           _timetable.keys.toList()[dayIndex],
                           _notCurrentWeek))),
           onRefresh: () async {
-            await _refresh(true);
+            await _refresh(true, true);
           },
         );
       },
