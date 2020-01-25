@@ -25,7 +25,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
-def vcode = (int)(((new Date().getTime()/1000) - 1451606400) / 10)
+def vcode = (int) (((new Date().getTime() / 1000) - 1451606400) / 10)
 
 android {
     compileSdkVersion 28
@@ -46,6 +46,7 @@ android {
         versionCode vcode.toInteger()
         versionName vcode.toString()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -68,5 +69,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.google.firebase:firebase-analytics:17.2.0'
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
+    implementation 'io.sentry:sentry-android:1.7.27'
+    implementation 'org.slf4j:slf4j-nop:1.7.25'
 }
 apply plugin: 'com.google.gms.google-services'
