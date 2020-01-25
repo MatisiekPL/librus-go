@@ -8,8 +8,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class GradesApi {
   static String apiUrl = 'https://api.librus.pl/2.0';
 
-  static Future<dynamic> fetch(timeFilter) async {
+  static Future<dynamic> fetch(timeFilter, {bool force}) async {
+    if (force == null) force = false;
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!force && prefs.containsKey("grades_cache")) {
+      return json.decode(prefs.getString("grades_cache"));
+    }
     var synergiaToken = prefs.getString("synergia_token");
     var dio = Dio();
     dio.interceptors
@@ -64,6 +68,7 @@ class GradesApi {
             .parse(grade['AddDate'])
             .millisecondsSinceEpoch)) Store.indicators['grades'] = true;
     Store.overviewScreenSetState();
+    await prefs.setString("grades_cache", json.encode(out));
     return out;
   }
 }
