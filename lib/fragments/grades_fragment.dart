@@ -48,7 +48,7 @@ class _GradesFragmentState extends State<GradesFragment> {
         },
       )
     ]);
-    _refresh();
+    _refresh(false);
   }
 
   Future<void> _switchSemester() async {
@@ -111,13 +111,13 @@ class _GradesFragmentState extends State<GradesFragment> {
     print('Recently grades was displayed on: ${Store.gradeReadTime}');
   }
 
-  Future<void> _refresh() async {
+  Future<void> _refresh(bool force) async {
     print("Refreshing!");
-    _semesters = await GradesApi.fetch(null);
+    _semesters = await GradesApi.fetch(null, force: force);
     try {
       setState(() {});
     } catch (err) {}
-    _showRefreshSnackbar();
+    if (force) _showRefreshSnackbar();
     setState(() {
       _selectedSemester = _semesters.keys.last;
     });
@@ -138,7 +138,9 @@ class _GradesFragmentState extends State<GradesFragment> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-        onRefresh: _refresh,
+        onRefresh: () async {
+          await _refresh(true);
+        },
         child: _semesters == null
             ? Center(child: CircularProgressIndicator())
             : (_semesters.keys.length == 0

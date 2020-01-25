@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AbsencesApi {
   static String apiUrl = 'https://api.librus.pl/2.0';
 
-  static Future<dynamic> fetch() async {
+  static Future<dynamic> fetch({bool force}) async {
+    if (force == null) force = false;
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!force && prefs.containsKey("absences_cache")) {
+      return json.decode(prefs.getString("absences_cache"));
+    }
     var synergiaToken = prefs.getString("synergia_token");
     var dio = Dio();
     dio.interceptors
@@ -22,6 +28,7 @@ class AbsencesApi {
         (types.firstWhere(
                 (dynamic type) => type["Id"] == attendance["Type"]["Id"])
             as dynamic));
+    await prefs.setString("absences_cache", json.encode(attendances));
     return attendances;
   }
 }

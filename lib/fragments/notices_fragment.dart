@@ -15,14 +15,14 @@ class _NoticesFragmentState extends State<NoticesFragment> {
   @override
   void initState() {
     super.initState();
-    _refresh();
+    _refresh(false);
     Store.actionsSubject.add(<Widget>[]);
   }
 
-  _refresh() async {
-    _data = await NoticesApi.fetch();
+  _refresh(bool force) async {
+    _data = await NoticesApi.fetch(force: force);
     setState(() {});
-    _showRefreshSnackbar();
+    if (force) _showRefreshSnackbar();
   }
 
   void _showRefreshSnackbar() {
@@ -43,7 +43,7 @@ class _NoticesFragmentState extends State<NoticesFragment> {
         ? Center(child: CircularProgressIndicator())
         : RefreshIndicator(
             onRefresh: () async {
-              await _refresh();
+              await _refresh(true);
             },
             child: ListView.builder(
               itemCount: _data.length,

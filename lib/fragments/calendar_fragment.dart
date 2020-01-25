@@ -27,7 +27,7 @@ class _CalendarFragmentState extends State<CalendarFragment>
     _calendarController = CalendarController();
 
     Store.actionsSubject.add(<Widget>[]);
-    await _refresh();
+    await _refresh(false);
 
     _animationController = AnimationController(
       vsync: this,
@@ -37,14 +37,14 @@ class _CalendarFragmentState extends State<CalendarFragment>
     _animationController.forward();
   }
 
-  Future<void> _refresh() async {
+  Future<void> _refresh(bool force) async {
     print("Refreshing!");
-    _events = await CalendarApi.fetch();
+    _events = await CalendarApi.fetch(force: force);
     setState(() {
       _selectedEvents = _events[new DateFormat('yyyy-MM-dd')
           .parse(new DateFormat('yyyy-MM-dd').format(new DateTime.now()))];
     });
-    _showRefreshSnackbar();
+    if (force) _showRefreshSnackbar();
   }
 
   void _showRefreshSnackbar() {
@@ -74,7 +74,9 @@ class _CalendarFragmentState extends State<CalendarFragment>
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-        onRefresh: _refresh,
+        onRefresh: () async {
+          await _refresh(true);
+        },
         child: ListView(
           children: <Widget>[
             _events != null
