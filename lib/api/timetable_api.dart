@@ -9,8 +9,8 @@ class TimetableApi {
   static Future<dynamic> fetch(String weekStart, {bool force}) async {
     if (force == null) force = false;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (!force && prefs.containsKey("timetable_cache")) {
-      return json.decode(prefs.getString("timetable_cache"));
+    if (!force && prefs.containsKey("timetable_cache_$weekStart")) {
+      return json.decode(prefs.getString("timetable_cache_$weekStart"));
     }
     var synergiaToken = prefs.getString("synergia_token");
     var dio = Dio();
@@ -41,7 +41,7 @@ class TimetableApi {
         });
       });
     });
-    await prefs.setString("timetable_cache", json.encode(timetable));
+    await prefs.setString("timetable_cache_$weekStart", json.encode(timetable));
     return timetable;
   }
 }
