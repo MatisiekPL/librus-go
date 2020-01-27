@@ -35,40 +35,11 @@ class Store {
       var librusRefreshToken = prefs.getString('librus_refresh_token');
       print('Got cached Librus token: $librusToken');
       print('Got cached Librus refresh token: $librusRefreshToken');
-      if (!prefs.containsKey("synergia_account") || !(await isSynergiaTokenValid(json.decode(prefs.getString("synergia_account"))["accounts"][0]["accessToken"]))) {
-        try {
-          await _loadSynergiaAccounts(librusToken);
-        } catch (err) {
-          librusToken = await _refreshLibrusToken(librusRefreshToken);
-          await _loadSynergiaAccounts(librusToken);
-        }
-      } else {
-        synergiaAccount = json.decode(prefs.getString("synergia_account"));
-        await prefs.setString("synergia_account", json.encode(synergiaAccount));
-        synergiaAccount = synergiaAccount["accounts"][0];
-        var synergiaToken = synergiaAccount["accessToken"];
-        print("Got Synergia token: $synergiaToken");
-        await prefs.setString("synergia_token", synergiaToken);
-        await prefs.setString("synergia_login", synergiaAccount['login']);
-      }
+      librusToken = await _refreshLibrusToken(librusRefreshToken);
+      await _loadSynergiaAccounts(librusToken);
       return true;
     }
     return false;
-  }
-
-  static Future<bool> isSynergiaTokenValid(String synergiaToken) async {
-    var dio = Dio();
-    dio.interceptors
-        .add(InterceptorsWrapper(onRequest: (Options options) async {
-      options.headers["Authorization"] = 'Bearer $synergiaToken';
-      return options;
-    }));
-    try {
-      await dio.get('https://api.librus.pl/2.0/Grades');
-      return true;
-    } catch (err) {
-      return false;
-    }
   }
 
   static Future<String> login(String username, String password) async {
@@ -141,7 +112,6 @@ class Store {
     var response = await client.get(url,
         options: Options(headers: {'Authorization': 'Bearer $librusToken'}));
     synergiaAccount = response.data;
-    await prefs.setString("synergia_account", json.encode(synergiaAccount));
     if (synergiaLogin == null) synergiaAccount = synergiaAccount["accounts"][0];
     var synergiaToken = synergiaAccount["accessToken"];
     print("Got Synergia token: $synergiaToken");
