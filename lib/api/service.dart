@@ -5,6 +5,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:librus_go/api/store.dart';
 import 'package:preferences/preference_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'grades_api.dart';
 
@@ -58,11 +59,14 @@ class BackgroundService {
 //        updateNotification(0, 'Logowanie');
 //        updateNotification(1, 'Oceny');
         var grades = await GradesApi.fetch(null, force: true, raw: true);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
         grades.forEach((grade) {
-          if (Store.gradeReadTime <
-              DateFormat("yyyy-MM-dd HH:mm:ss")
-                  .parse(grade['AddDate'])
-                  .millisecondsSinceEpoch) {
+          if (prefs.containsKey("grade_notify_time")
+              ? prefs.getInt('grade_notify_time')
+              : 0 <
+                  DateFormat("yyyy-MM-dd HH:mm:ss")
+                      .parse(grade['AddDate'])
+                      .millisecondsSinceEpoch) {
             notifications.add({
               'id': grade['Id'],
               'specifics': getSpecifics("Oceny"),
@@ -84,6 +88,8 @@ class BackgroundService {
               notification['title'],
               notification['description'],
               notification['specifics']));
+        await prefs.setInt(
+            "grade_notify_time", DateTime.now().millisecondsSinceEpoch);
       }
     }
   }
