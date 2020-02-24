@@ -13,7 +13,7 @@ class Store {
   static BehaviorSubject actionsSubject = new BehaviorSubject();
   static final String baseUrl = 'https://portal.librus.pl';
   static final String baseApiUrl = 'https://api.librus.pl/2.0';
-  static final String clientId = 'wmSyUMo8llDAs4y9tJVYY92oyZ6h4lAt7KCuy0Gv';
+  static final String clientId = '6XPsKf10LPz1nxgHQLcvZ1KM48DYzlBAhxipaXY8';
   static Dio client;
   static DefaultCookieJar jar;
   static dynamic synergiaAccount;
