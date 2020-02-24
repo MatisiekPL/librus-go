@@ -4,6 +4,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:librus_go/api/store.dart';
+import 'package:preferences/preference_service.dart';
 
 import 'grades_api.dart';
 
@@ -32,21 +33,21 @@ class BackgroundService {
             progress: 1,
             playSound: false);
         dynamic getSpecifics(String title) {
-          return AndroidNotificationDetails(
-              'librus.${title.replaceAll(" ", "_")}',
-              title,
-              '$title z dziennika',
-              importance: Importance.Default,
-              priority: Priority.High,
-              ticker: 'ticker',
-              enableVibration: true,
-              enableLights: true,
-              playSound: true);
+          return NotificationDetails(
+              AndroidNotificationDetails('librus.${title.replaceAll(" ", "_")}',
+                  title, '$title z dziennika',
+                  importance: Importance.Default,
+                  priority: Priority.High,
+                  ticker: 'ticker',
+                  enableVibration: true,
+                  enableLights: true,
+                  playSound: true),
+              null);
         }
 
         var platformChannelSpecifics =
             NotificationDetails(androidPlatformChannelSpecifics, null);
-        var notificationId = DateTime.now().millisecondsSinceEpoch;
+        var notificationId = 0;
         void updateNotification(int x, String title) {
           androidPlatformChannelSpecifics.progress = x;
           notificationsPlugin.show(notificationId, 'Trwa synchronizacja', title,
@@ -54,9 +55,8 @@ class BackgroundService {
               payload: 'sync');
         }
 
-        updateNotification(0, 'Logowanie');
-
-        updateNotification(1, 'Oceny');
+//        updateNotification(0, 'Logowanie');
+//        updateNotification(1, 'Oceny');
         var grades = await GradesApi.fetch(null, force: true, raw: true);
         grades.forEach((grade) {
           if (Store.gradeReadTime <
@@ -66,28 +66,24 @@ class BackgroundService {
             notifications.add({
               'id': grade['Id'],
               'specifics': getSpecifics("Oceny"),
-              'title': 'Dodano nową ocenę: ' + grade['Grade'].toString(),
-              'description': 'Przedmiot: ' + grade['subject']['Name'],
+              'title': 'Dodano nową ocenę ' +
+                  grade['Grade'].toString() +
+                  ' z ' +
+                  grade['subject']['Name'],
+              'description': grade['category']['CountToTheAverage']
+                  ? 'Waga: ' + grade['category']['Weight'].toString()
+                  : 'Brak wagi',
               'payload': 'grade'
             });
           }
         });
-        // DEBUG
-        var grade = grades[0];
-        notifications.add({
-          'id': grade['Id'],
-          'specifics': getSpecifics("Oceny"),
-          'title': 'Dodano nową ocenę: ' + grade['Grade'].toString(),
-          'description': 'Przedmiot: ' + grade['subject']['Name'],
-          'payload': 'grade'
-        });
-        // /DEBUG
-        notificationsPlugin.cancel(0);
-        notifications.forEach((notification) => notificationsPlugin.show(
-            notification['id'],
-            notification['title'],
-            notification['body'],
-            notification['specifics']));
+//        notificationsPlugin.cancel(0);
+        if (PrefService.getBool("use_notifications") ?? true)
+          notifications.forEach((notification) => notificationsPlugin.show(
+              notification['id'],
+              notification['title'],
+              notification['description'],
+              notification['specifics']));
       }
     }
   }

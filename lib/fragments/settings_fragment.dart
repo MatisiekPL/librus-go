@@ -33,12 +33,17 @@ class _SettingsFragmentState extends State<SettingsFragment> {
                   return Container();
                 });
           }),
-      DropdownPreference(
-        'Czas odświeżania powiadomień',
-        'refresh_time',
-        defaultVal: '60 minut',
-        values: ['30 minut', '60 minut', '90 minut'],
+      SwitchPreference(
+        'Powiadomienia',
+        'use_notifications',
+        defaultVal: true,
       ),
+//      DropdownPreference(
+//        'Czas odświeżania powiadomień',
+//        'refresh_time',
+//        defaultVal: '60 minut',
+//        values: ['30 minut', '60 minut', '90 minut'],
+//      ),
     ]);
   }
 }

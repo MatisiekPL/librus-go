@@ -4,6 +4,8 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
+import 'package:librus_go/api/service.dart';
+import 'package:librus_go/main.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,6 +39,7 @@ class Store {
       print('Got cached Librus refresh token: $librusRefreshToken');
       librusToken = await _refreshLibrusToken(librusRefreshToken);
       await _loadSynergiaAccounts(librusToken);
+      setupBackgroundService();
       return true;
     }
     return false;

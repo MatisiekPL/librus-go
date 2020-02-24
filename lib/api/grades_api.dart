@@ -40,6 +40,10 @@ class GradesApi {
         (categories.firstWhere(
                 (dynamic category) => category["Id"] == grade["Category"]["Id"])
             as dynamic));
+    if (raw)
+      grades.forEach((dynamic grade) => grade["subject"] = (subjects.firstWhere(
+              (dynamic subject) => subject["Id"] == grade["Subject"]["Id"])
+          as dynamic));
     grades.forEach((dynamic grade) => grade["addedBy"] = (users.firstWhere(
         (dynamic user) => user["Id"] == grade["AddedBy"]["Id"]) as dynamic));
     if (raw) return grades;
