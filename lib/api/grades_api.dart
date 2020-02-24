@@ -8,8 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class GradesApi {
   static String apiUrl = 'https://api.librus.pl/2.0';
 
-  static Future<dynamic> fetch(timeFilter, {bool force}) async {
+  static Future<dynamic> fetch(timeFilter, {bool force, bool raw}) async {
     if (force == null) force = false;
+    if (raw == null) raw = false;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (!force && prefs.containsKey("grades_cache")) {
       return json.decode(prefs.getString("grades_cache"));
@@ -41,6 +42,7 @@ class GradesApi {
             as dynamic));
     grades.forEach((dynamic grade) => grade["addedBy"] = (users.firstWhere(
         (dynamic user) => user["Id"] == grade["AddedBy"]["Id"]) as dynamic));
+    if (raw) return grades;
     var semesters = [];
     var out = {};
     grades.forEach((dynamic grade) => !semesters.contains(grade["Semester"])

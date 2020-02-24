@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:librus_go/api/service.dart';
 import 'package:librus_go/screens/login_screen.dart';
 import 'package:librus_go/screens/offline_screen.dart';
 import 'package:librus_go/screens/overview_screen.dart';
@@ -38,10 +40,23 @@ Future<dynamic> _handleMessage(Map<String, dynamic> message) async {
   }
 }
 
+void setupBackgroundService() async {
+  await AndroidAlarmManager.periodic(
+      Duration(
+          minutes: int.parse(PrefService.getInt("refresh_time")
+                  .toString()
+                  .replaceAll(" minut", "")
+                  .trim()) ??
+              60),
+      1,
+      BackgroundService.fetchInBackground);
+}
+
 void main() {
   initializeDateFormatting()
       .then((_) => WidgetsFlutterBinding.ensureInitialized())
       .then((_) => PrefService.init(prefix: 'pref_'))
+      .then((_) => AndroidAlarmManager.initialize())
       .then((_) => checkIfRunningInAutomatedTestsEnvironment())
       .then((result) {
     if (result) {
@@ -58,6 +73,7 @@ void main() {
       print("---FCM---");
     });
     Store.init();
+    BackgroundService.fetchInBackground();
     runZoned(
       () => runApp(App()),
       onError: (Object error, StackTrace stackTrace) {

@@ -28,6 +28,8 @@ dependencies:
   firebase_messaging: ^6.0.9
   syncfusion_flutter_charts: ^17.4.40
   firebase_in_app_messaging: ^0.1.1+1
+  android_alarm_manager: ^0.4.5+4
+  flutter_local_notifications: ^1.2.0+3
 
 dev_dependencies:
   flutter_test:
