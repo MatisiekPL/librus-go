@@ -42,7 +42,7 @@ Future<dynamic> _handleMessage(Map<String, dynamic> message) async {
 
 void setupBackgroundService() async {
   await AndroidAlarmManager.periodic(
-      Duration(minutes: 90), 1, BackgroundService.fetchInBackground);
+      Duration(minutes: 20), 1, BackgroundService.fetchInBackground);
 }
 
 void main() {
@@ -66,6 +66,8 @@ void main() {
       print("---FCM---");
     });
     Store.init();
+//    AndroidAlarmManager.oneShot(
+//        Duration(seconds: 10), 2, BackgroundService.fetchInBackground);
     runZoned(
       () => runApp(App()),
       onError: (Object error, StackTrace stackTrace) {
